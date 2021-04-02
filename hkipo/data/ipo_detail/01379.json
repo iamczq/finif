@@ -1,0 +1,80 @@
+{
+    "data": {
+        "issuanceinfo": {
+            "industrycode": "209001",
+            "industry": "地產",
+            "ipoprice": {
+                "ceiling": "6.750",
+                "floor": "6.250"
+            },
+            "ipodate": {
+                "start": "2020-12-11 00:00:00",
+                "end": "2020-12-16 00:00:00"
+            },
+            "minimumcapital": "3409.01",
+            "subscribed": "27.68",
+            "marketcap": "5.00億",
+            "H_marketcap": "1.25億",
+            "pe": "11.92",
+            "codesrate": "20.00",
+            "link": "https://staticpdf.iqdii.com/stockdata/notice/01379/2020/2020121100012_c.pdf",
+            "ipopricing": "6.250",
+            "resultdate": "2020-12-29 00:00:00",
+            "enddate": "2020-12-16 00:00:00",
+            "listeddate": "2020-12-30 00:00:00",
+            "issuenumber": "2000.00萬",
+            "issuenumberhK": "600.00萬",
+            "issuenumberother": "1400.00萬",
+            "grayprice": "6.19",
+            "sponsors": "信達國際融資有限公司",
+            "raisemoney": "6180.00萬",
+            "use": "1、約70%，或約43.3百萬港元（相當于約人民幣36.7百萬元），將用于為建立及建造產業園之成本及開支提供部分資金，以擴張我們于工量刃具行業的覆蓋面；\n2、約20%，或約12.4百萬港元（相當于約人民幣10.5百萬元），將用于為三樓的進一步開發提供資金；\n3、約10%，或約6.1百萬港元（相當于約人民幣5.2百萬元），用于一般營運資金及其他一般企業用途。",
+            "shares": 500,
+            "leadagent": "雷根國際證券有限公司,信達國際融資有限公司,中國通海證券有限公司,Conrad Investment Services Limited,力高證券有限公司,偉祿亞太證券有限公司",
+            "bookrunners": "雷根國際證券有限公司,信達國際融資有限公司",
+            "coordinator": "雷根國際證券有限公司,信達國際融資有限公司",
+            "firstDayOpen": "6.14",
+            "IsEiio": 0,
+            "Interestdays": 13,
+            "PENote": "按經審核的最近年度公司股東應占溢利和發行后總股本計算；發行價未確定時，按招股價中間價計算；發行價確定后，按招股定價計算。",
+            "OverAllotment": "有",
+            "StabilizingManager": "雷根國際證券有限公司",
+            "code": "E01379",
+            "name": "溫嶺工量刃具",
+            "fullname": "溫嶺浙江工量刃具交易中心股份有限公司"
+        },
+        "institutioninfo": {
+            "principaloffice": "中國浙江省溫嶺市溫嶠鎮前洋下村",
+            "registrars": "卓佳證券登記有限公司",
+            "registrarstel": "(852) 2980 1333",
+            "chairman": "黃群",
+            "secretary": "徐亦,陳芷瑜",
+            "telephone": "",
+            "substantialshareholders": "市場集團(14.93%),嶠嶺投資(14.48%),前洋投資(13.13%),茅威投資(8.63%),中街和德投資(7.24%),上宇投資(7.24%)",
+            "principalactivities": "公司為中國知名工量刃具交易中心運營商。",
+            "website": "http://cnglj.com"
+        },
+        "managerinfo": [
+            {
+                "managername": "黃群",
+                "post": "非執行董事董事會主席",
+                "rankno": 1
+            },
+            {
+                "managername": "周桂林",
+                "post": "執行董事及首席運營官",
+                "rankno": 2
+            },
+            {
+                "managername": "潘海鴻",
+                "post": "執行董事兼行政總裁",
+                "rankno": 3
+            }
+        ],
+        "investorinfo": [],
+        "TotalShareholdingPercentage": 0
+    },
+    "result": 1,
+    "Version": "4.5.190802.46408",
+    "ElapsedMilliseconds": 10
+}

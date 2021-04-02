@@ -1,0 +1,64 @@
+{
+    "data": {
+        "issuanceinfo": {
+            "industrycode": "204001",
+            "industry": "汽車",
+            "ipoprice": {
+                "ceiling": "12.830",
+                "floor": "9.540"
+            },
+            "ipodate": {
+                "start": "2010-03-16 00:00:00",
+                "end": "2010-03-19 00:00:00"
+            },
+            "minimumcapital": "6479.66",
+            "subscribed": "1.24",
+            "marketcap": "190.85億",
+            "H_marketcap": "--",
+            "pe": "--",
+            "codesrate": "100.00",
+            "link": "https://staticpdf.iqdii.com/stockdata/notice/Prospectus/00881/LTN20100316022_C.pdf",
+            "ipopricing": "10.000",
+            "resultdate": "2010-03-25 00:00:00",
+            "enddate": "2010-03-19 00:00:00",
+            "listeddate": "2010-03-26 00:00:00",
+            "issuenumber": "28616.00萬",
+            "issuenumberhK": "3065.00萬",
+            "issuenumberother": "25551.00萬",
+            "grayprice": "--",
+            "sponsors": "摩根士丹利亞洲有限公司,瑞士銀行香港分行",
+            "raisemoney": "267900.00萬",
+            "use": "1、約70%或1876百萬港元，用作透過內部增長及選擇性收購、結盟、合營及其他戰略性投資以拓展我們4S 經銷店的分銷網絡；\n2、約4%或107百萬港元，用作持續升級、維護及翻新4S經銷店,約4%或107百萬港元，用作另外設立快修店,約4%或107百萬港元，用作另外設立汽車用品展覽中心,約8%或214百萬港元，用作發展我們的二手車銷售業務；\n3、約10%或268百萬港元，用作一般企業用途。",
+            "shares": 500,
+            "leadagent": "摩根士丹利亞洲有限公司,瑞士銀行香港分行,中銀國際亞洲有限公司",
+            "bookrunners": "摩根士丹利亞洲有限公司,瑞士銀行香港分行,中銀國際亞洲有限公司",
+            "coordinator": "摩根士丹利亞洲有限公司",
+            "firstDayOpen": "10.00",
+            "IsEiio": 0,
+            "Interestdays": 6,
+            "PENote": "按經審核的最近年度公司股東應占溢利和發行后總股本計算；發行價未確定時，按招股價中間價計算；發行價確定后，按招股定價計算。",
+            "OverAllotment": "有",
+            "StabilizingManager": "摩根士丹利亞洲有限公司",
+            "code": "E00881",
+            "name": "中升控股",
+            "fullname": "中升集團控股有限公司"
+        },
+        "institutioninfo": {
+            "principaloffice": "香港灣仔港灣道30號新鴻基中心18樓1803-09室",
+            "registrars": "香港中央證券登記有限公司",
+            "registrarstel": "(852) 2862 8628",
+            "chairman": "黃毅",
+            "secretary": "姚振超,麥詩敏",
+            "telephone": "(852) 2803 5676",
+            "substantialshareholders": "黃毅及關連人士(57.76%),Jardine Strategic Holdings Limited(19.98%)",
+            "principalactivities": "汽車的銷售及服務。",
+            "website": "http://www.zs-group.com.cn"
+        },
+        "managerinfo": [],
+        "investorinfo": [],
+        "TotalShareholdingPercentage": 0
+    },
+    "result": 1,
+    "Version": "4.5.190802.46408",
+    "ElapsedMilliseconds": 516
+}

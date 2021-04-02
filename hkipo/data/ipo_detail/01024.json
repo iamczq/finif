@@ -1,0 +1,121 @@
+{
+    "data": {
+        "issuanceinfo": {
+            "industrycode": "210002",
+            "industry": "軟件服務",
+            "ipoprice": {
+                "ceiling": "115.000",
+                "floor": "105.000"
+            },
+            "ipodate": {
+                "start": "2021-01-26 00:00:00",
+                "end": "2021-01-29 00:00:00"
+            },
+            "minimumcapital": "11615.89",
+            "subscribed": "1204.16",
+            "marketcap": "4724.42億",
+            "H_marketcap": "--",
+            "pe": "--",
+            "codesrate": "4.00",
+            "link": "https://staticpdf.iqdii.com/stockdata/notice/01024/2021/2021012600014_c.pdf",
+            "ipopricing": "115.000",
+            "resultdate": "2021-02-04 00:00:00",
+            "enddate": "2021-01-29 00:00:00",
+            "listeddate": "2021-02-05 00:00:00",
+            "issuenumber": "36521.86萬",
+            "issuenumberhK": "2191.32萬",
+            "issuenumberother": "34330.54萬",
+            "grayprice": "310.60",
+            "sponsors": "摩根士丹利亞洲有限公司,美林遠東有限公司,華興證券(香港)有限公司",
+            "raisemoney": "4127600.00萬",
+            "use": "1、約35%（即14,446.6百萬港元）將用于增強生態系統；\n2、約30%（即12,382.8百萬港元）將用于加強研發及技術能力；\n3、約25%（即10,319.0百萬港元）將用于選擇性收購或投資與我們業務互補及符合我們理念和增長策略的產品、服務及業務；\n4、約10%（即4,127.6百萬港元）將用作營運資金及一般企業用途。",
+            "shares": 100,
+            "leadagent": "摩根士丹利亞洲有限公司,美林亞太有限公司,華興證券(香港)有限公司,香港上海匯豐銀行有限公司,工銀國際證券有限公司,海通國際證券有限公司,招銀國際融資有限公司,中銀國際亞洲有限公司,富途證券國際(香港)有限公司",
+            "bookrunners": "摩根士丹利亞洲有限公司,美林亞太有限公司,華興證券(香港)有限公司,香港上海匯豐銀行有限公司,工銀國際融資有限公司,海通國際證券有限公司,招銀國際融資有限公司,中銀國際亞洲有限公司,富途證券國際(香港)有限公司",
+            "coordinator": "摩根士丹利亞洲有限公司,美林亞太有限公司,華興證券(香港)有限公司",
+            "firstDayOpen": "338.00",
+            "IsEiio": 0,
+            "Interestdays": 6,
+            "PENote": "按經審核的最近年度公司股東應占溢利和發行后總股本計算；發行價未確定時，按招股價中間價計算；發行價確定后，按招股定價計算。",
+            "OverAllotment": "有",
+            "StabilizingManager": "摩根士丹利亞洲有限公司",
+            "code": "E01024",
+            "name": "快手－Ｗ",
+            "fullname": "快手科技"
+        },
+        "institutioninfo": {
+            "principaloffice": "中國北京海淀區上地西路6號1號樓",
+            "registrars": "香港中央證券登記有限公司",
+            "registrarstel": "(852) 2862 8628",
+            "chairman": "宿華",
+            "secretary": "賈弘毅,蘇嘉敏",
+            "telephone": "(8610) 5391 1294",
+            "substantialshareholders": "騰訊(17.744%),5Y Capital(13.704%),Reach Best(11.792%),Ke Yong(9.355%)",
+            "principalactivities": "公司是全球短視頻行業的開創者,致力于幫助用戶通過視頻記錄和分享生活，是中國最廣泛使用的內容社區和社交平臺之一,主要通過銷售虛擬物品，提供多種形式的在線營銷服務，以及收取電商銷售傭金進行變現。",
+            "website": "http://www.kuaishou.com"
+        },
+        "managerinfo": [
+            {
+                "managername": "宿華",
+                "post": "董事長、首席執行官兼執行董事",
+                "rankno": 1
+            },
+            {
+                "managername": "程一笑",
+                "post": "首席產品官兼執行董事",
+                "rankno": 2
+            },
+            {
+                "managername": "李朝暉",
+                "post": "非執行董事",
+                "rankno": 3
+            }
+        ],
+        "investorinfo": [
+            {
+                "institutionname": "The Capital Group Funds",
+                "shareholding": "33,711,300.0",
+                "percentage": 9.23,
+                "ReleaseDate": "2021-08-05 00:00:00",
+                "relatedparty": "",
+                "subsidiary": [],
+                "InverstorType": "基金"
+            },
+            {
+                "institutionname": "GIC Private Limited",
+                "shareholding": "22,249,400.0",
+                "percentage": 6.09,
+                "ReleaseDate": "2021-08-05 00:00:00",
+                "relatedparty": "",
+                "subsidiary": [],
+                "InverstorType": "公司"
+            },
+            {
+                "institutionname": "Aranda Investments Pte. Ltd.",
+                "shareholding": "22,249,400.0",
+                "percentage": 6.09,
+                "ReleaseDate": "2021-08-05 00:00:00",
+                "relatedparty": "Seletar Investments Pte Ltd",
+                "subsidiary": [
+                    "Aranda Investments Pte. Ltd."
+                ],
+                "InverstorType": "公司"
+            },
+            {
+                "institutionname": "Fidelity International",
+                "shareholding": "18,204,100.0",
+                "percentage": 4.98,
+                "ReleaseDate": "2021-08-05 00:00:00",
+                "relatedparty": "富達基金(香港)有限公司",
+                "subsidiary": [
+                    "Fidelity International"
+                ],
+                "InverstorType": "基金"
+            }
+        ],
+        "TotalShareholdingPercentage": 45.22
+    },
+    "result": 1,
+    "Version": "4.5.190802.46408",
+    "ElapsedMilliseconds": 9
+}

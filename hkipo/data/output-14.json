@@ -1,0 +1,29 @@
+{
+    "result": 1,
+    "msg": null,
+    "data": {
+        "totalRows": 1301,
+        "dataList": [
+            {
+                "symbol": "06813",
+                "shortName": "大喜屋集團",
+                "industry": "餐飲娛樂",
+                "price_Ceiling": 2.0000,
+                "price_Floor": 1.6000,
+                "ipoPricing": null,
+                "listedDate": null,
+                "subscribed": null,
+                "codesRate": null,
+                "marginMultiple": 0.0,
+                "darkMaxGain": null,
+                "darkMaxDecline": null,
+                "firstMaxGain": null,
+                "firstMaxDecline": null,
+                "darkPrice": 0.0,
+                "firstPrice": 0.0,
+                "zdf": null,
+                "sector": "主板"
+            }
+        ]
+    }
+}

@@ -1,0 +1,123 @@
+{
+    "data": {
+        "issuanceinfo": {
+            "industrycode": "204005",
+            "industry": "醫療保健",
+            "ipoprice": {
+                "ceiling": "26.660",
+                "floor": "22.700"
+            },
+            "ipodate": {
+                "start": "2021-02-05 00:00:00",
+                "end": "2021-02-10 00:00:00"
+            },
+            "minimumcapital": "13464.33",
+            "subscribed": "4133.19",
+            "marketcap": "111.43億",
+            "H_marketcap": "--",
+            "pe": "--",
+            "codesrate": "2.00",
+            "link": "https://staticpdf.iqdii.com/stockdata/notice/06606/2021/2021020500018_c.pdf",
+            "ipopricing": "26.660",
+            "resultdate": "2021-02-17 00:00:00",
+            "enddate": "2021-02-10 00:00:00",
+            "listeddate": "2021-02-18 00:00:00",
+            "issuenumber": "7659.80萬",
+            "issuenumberhK": "3829.90萬",
+            "issuenumberother": "3829.90萬",
+            "grayprice": "69.30",
+            "sponsors": "高盛(亞洲)有限責任公司,瑞士銀行香港分行",
+            "raisemoney": "189860.00萬",
+            "use": "1、約40%（或759.4百萬港元），將分配用于為常衛清（作為醫療服務或獨立產品）的商業化及進一步開發提供資金；\n2、約5%（或94.9百萬港元），將分配用于通過提高結直腸癌篩查意識及提升市場滲透率為噗噗管的持續銷售及營銷提供資金；\n3、約30%（或569.6百萬港元），將分配用于為正在進行及計劃進行的研發提供資金以進一步發展幽幽管、宮證清及其他處于早期階段的管線產品；\n4、約15%（或284.8百萬港元），將用于通過潛在收購或外部引進癌癥篩查領域的候選產品持續擴大及多元化本公司的產品組合；\n5、約10%（或189.9百萬港元），將用作本公司的營運資金及其他一般企業用途。\n",
+            "shares": 500,
+            "leadagent": "高盛(亞洲)有限責任公司,瑞士銀行香港分行,海通國際證券有限公司,中銀國際亞洲有限公司,興證國際融資有限公司,大和資本市場香港有限公司,鼎珮證券有限公司,富途證券國際(香港)有限公司",
+            "bookrunners": "高盛(亞洲)有限責任公司,瑞士銀行香港分行,海通國際證券有限公司,中銀國際亞洲有限公司,興證國際融資有限公司,大和資本市場香港有限公司,鼎珮證券有限公司",
+            "coordinator": "高盛(亞洲)有限責任公司,瑞士銀行香港分行,海通國際證券有限公司,中銀國際亞洲有限公司,興證國際融資有限公司,大和資本市場香港有限公司,鼎珮證券有限公司",
+            "firstDayOpen": "76.00",
+            "IsEiio": 0,
+            "Interestdays": 7,
+            "PENote": "按經審核的最近年度公司股東應占溢利和發行后總股本計算；發行價未確定時，按招股價中間價計算；發行價確定后，按招股定價計算。",
+            "OverAllotment": "有",
+            "StabilizingManager": "高盛(亞洲)有限責任公司",
+            "code": "E06606",
+            "name": "諾輝健康－Ｂ",
+            "fullname": "諾輝健康"
+        },
+        "institutioninfo": {
+            "principaloffice": "中國浙江杭州濱江區江二路400號T1幢13層",
+            "registrars": "卓佳證券登記有限公司",
+            "registrarstel": "(852) 2980 1333",
+            "chairman": "陳一友",
+            "secretary": "高煜,楊靜文",
+            "telephone": "(86571) 8110 7210",
+            "substantialshareholders": "陳一友(11.01%),啟明實體(8.59%),MST Development Limited(5.51%)",
+            "principalactivities": "公司是中國結直腸癌篩查市場的先行者。",
+            "website": "http://ir.newhorizonbio.com"
+        },
+        "managerinfo": [
+            {
+                "managername": "陳一友",
+                "post": "主席、首席科學官兼執行董事",
+                "rankno": 1
+            },
+            {
+                "managername": "朱葉青",
+                "post": "首席執行官兼執行董事",
+                "rankno": 2
+            },
+            {
+                "managername": "姚納新",
+                "post": "非執行董事",
+                "rankno": 3
+            }
+        ],
+        "investorinfo": [
+            {
+                "institutionname": "Invesco Advisers, Inc.",
+                "shareholding": "11,631,500.0",
+                "percentage": 15.19,
+                "ReleaseDate": "2021-08-18 00:00:00",
+                "relatedparty": "Invesco Ltd.",
+                "subsidiary": [
+                    "Invesco Advisers, Inc."
+                ],
+                "InverstorType": "公司"
+            },
+            {
+                "institutionname": "Lake Bleu Prime Healthcare Master Fund Limited",
+                "shareholding": "5,816,000.0",
+                "percentage": 7.59,
+                "ReleaseDate": "2021-08-18 00:00:00",
+                "relatedparty": "清池資本(香港)有限公司",
+                "subsidiary": [
+                    "Lake Bleu Prime Healthcare Master Fund Limited"
+                ],
+                "InverstorType": "基金"
+            },
+            {
+                "institutionname": "Boyu Capital Opportunities Master Fund",
+                "shareholding": "4,943,500.0",
+                "percentage": 6.45,
+                "ReleaseDate": "2021-08-18 00:00:00",
+                "relatedparty": "Boyu Capital Investment Management Co., Limited",
+                "subsidiary": [
+                    "Boyu Capital Opportunities Master Fund"
+                ],
+                "InverstorType": "基金"
+            },
+            {
+                "institutionname": "GIC Private Limited",
+                "shareholding": "2,908,000.0",
+                "percentage": 3.8,
+                "ReleaseDate": "2021-08-18 00:00:00",
+                "relatedparty": "",
+                "subsidiary": [],
+                "InverstorType": "公司"
+            }
+        ],
+        "TotalShareholdingPercentage": 47.09
+    },
+    "result": 1,
+    "Version": "4.5.190802.46408",
+    "ElapsedMilliseconds": 9
+}

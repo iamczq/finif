@@ -1,0 +1,64 @@
+{
+    "data": {
+        "issuanceinfo": {
+            "industrycode": "204006",
+            "industry": "農業產品",
+            "ipoprice": {
+                "ceiling": "6.200",
+                "floor": "6.200"
+            },
+            "ipodate": {
+                "start": "2014-04-15 00:00:00",
+                "end": "2014-07-29 00:00:00"
+            },
+            "minimumcapital": "3131.25",
+            "subscribed": "55.22",
+            "marketcap": "884.33億",
+            "H_marketcap": "--",
+            "pe": "--",
+            "codesrate": "100.00",
+            "link": "https://staticpdf.iqdii.com/stockdata/notice/Prospectus/00288/ltn20140415118_c.pdf",
+            "ipopricing": "6.200",
+            "resultdate": "2014-08-04 00:00:00",
+            "enddate": "2014-07-29 00:00:00",
+            "listeddate": "2014-08-05 00:00:00",
+            "issuenumber": "256740.00萬",
+            "issuenumberhK": "12837.00萬",
+            "issuenumberother": "243903.00萬",
+            "grayprice": "6.70",
+            "sponsors": "中銀國際亞洲有限公司,摩根士丹利亞洲有限公司",
+            "raisemoney": "1527900.00萬",
+            "use": "用于部分償還三年期銀團定期貸款（于二零一六年八月三十日到期，利率為倫敦銀行同業拆息加3.5%及未償本金額2,500百萬美元（相當于19,379百萬港元））",
+            "shares": 500,
+            "leadagent": "中銀國際亞洲有限公司,摩根士丹利亞洲有限公司",
+            "bookrunners": "中銀國際亞洲有限公司,摩根士丹利亞洲有限公司",
+            "coordinator": "中銀國際亞洲有限公司,摩根士丹利亞洲有限公司",
+            "firstDayOpen": "6.80",
+            "IsEiio": 0,
+            "Interestdays": 6,
+            "PENote": "按經審核的最近年度公司股東應占溢利和發行后總股本計算；發行價未確定時，按招股價中間價計算；發行價確定后，按招股定價計算。",
+            "OverAllotment": "有",
+            "StabilizingManager": "摩根士丹利亞洲有限公司",
+            "code": "E00288",
+            "name": "萬洲國際",
+            "fullname": "萬洲國際有限公司"
+        },
+        "institutioninfo": {
+            "principaloffice": "香港九龍柯士甸道西1號環球貿易廣場76樓7602B-7604A室",
+            "registrars": "香港中央證券登記有限公司",
+            "registrarstel": "(852) 2862 8628",
+            "chairman": "萬隆",
+            "secretary": "周豪",
+            "telephone": "",
+            "substantialshareholders": "Rise Grand Group Limited(35.94%)",
+            "principalactivities": "集團是世界上最大的豬肉食品企業，在豬肉產業鏈的所有環節，包括肉制品、生鮮豬肉和生豬養殖。",
+            "website": "http://www.wh-group.com"
+        },
+        "managerinfo": [],
+        "investorinfo": [],
+        "TotalShareholdingPercentage": 0
+    },
+    "result": 1,
+    "Version": "4.5.190802.46408",
+    "ElapsedMilliseconds": 507
+}
