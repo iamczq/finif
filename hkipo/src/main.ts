@@ -2,6 +2,7 @@ import chalk from "chalk";
 // todo: What's the {} here?
 import { prompt } from 'enquirer';
 import { Fetcher } from "./fetcher";
+import { Options } from "./option/option";
 
 console.log('START!!!!!!!!!!!!!!');
 prompt({
@@ -12,7 +13,7 @@ prompt({
     + chalk.yellow(`2. Fetch IPO list`) + '\r\n'
     + chalk.yellow(`3. Fetch IPO detail`) + '\r\n'
     + chalk.yellow(`4. Combine output.`) + '\r\n'
-    + chalk.yellow(`5. Play!`)
+    + chalk.yellow(`5. Play!`) + '\r\n'
     + chalk.yellow(`6. Option!`),
 }).then((response: any) => {
   const fetcher = new Fetcher();
@@ -30,6 +31,8 @@ prompt({
       fetcher.play();
       break;
     case '6':
+      const options = new Options();
+      options.main();
       break;
     default:
       console.log('Invalid choice.');
