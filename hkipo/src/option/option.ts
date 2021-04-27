@@ -1,5 +1,6 @@
 import fetch from 'node-fetch';
 import { IOption, IOptionPair } from './IOption';
+import * as iconv from "iconv-lite";
 
 export class Options {
     constructor() {
@@ -8,13 +9,17 @@ export class Options {
     /**
      * main
      */
-    public main() {
-        const contract = '2104';
-
+    public main(contract: string, source: 'index' | 'etf') {
         const futuresPromise = this.getFutures(contract);
-        const optionsPromise = this.getSina300IndexOptions(contract);
-
-        this.getEastMoney300EtfOptions(contract);
+        let optionsPromise: Promise<IOptionPair[]>;
+        if (source === 'index') {
+            optionsPromise = this.getSina300IndexOptions(contract);
+        } else if (source === 'etf') {
+            optionsPromise = this.getSina300EtfOptions(contract);
+        } else {
+            // default
+            optionsPromise = this.getSina300IndexOptions(contract);
+        }
 
         Promise.all([futuresPromise, optionsPromise])
             .then(respone => {
@@ -183,8 +188,9 @@ export class Options {
         return callPutPairs;
     }
 
-    private async getSina300EtfOptions(contract: string)/*: Promise<IOptionPair[]>*/ {
-        const codeRequest = await fetch(`https://hq.sinajs.cn/list=OP_UP_510300${contract},OP_DOWN_510300${contract},s_sh510050`, {
+    public async getSina300EtfOptions(contract: string): Promise<IOptionPair[]> {
+        const etf = '510300';
+        const codeRequest = await fetch(`https://hq.sinajs.cn/list=OP_UP_${etf}${contract},OP_DOWN_${etf}${contract},s_sh510050`, {
             "headers": {
                 "accept": "*/*",
                 "accept-language": "zh-CN,zh;q=0.9",
@@ -197,16 +203,23 @@ export class Options {
 
         const raw = await codeRequest.text();
 
-        console.log(raw);
+        const regCodeCalls: RegExp = /hq_str_OP_UP_.+?"(.+?)";/;
+        const regCodePuts: RegExp = /hq_str_OP_DOWN_.+?"(.+?)";/;
 
-        const regCalls: RegExp = /hq_str_OP_UP_.+?"(.+?)";/;
-        const regPuts: RegExp = /hq_str_OP_DOWN_.+?"(.+?)";/;
+        const codeCalls = regCodeCalls.exec(raw) || ['Regex failed', 'Regex failed'];
+        const codePuts = regCodePuts.exec(raw) || ['Regex failed', 'Regex failed'];
 
-        const codeCalls = regCalls.exec(raw) || ['Regex failed', 'Regex failed'];
-        const codePuts = regPuts.exec(raw) || ['Regex failed', 'Regex failed'];
-
-
-        const reqCall = await fetch("https://hq.sinajs.cn/list=CON_OP_10003315,CON_OP_10003303,CON_OP_10003299,CON_OP_10003263,CON_OP_10003264,CON_OP_10003265,CON_OP_10003266,CON_OP_10003267,CON_OP_10003268,CON_OP_10003269,CON_OP_10003270,CON_OP_10003271,s_sh510050", {
+        const reqCall = await fetch(`https://hq.sinajs.cn/list=${codeCalls[1]},s_sh${etf}`, {
+            "headers": {
+                "accept": "*/*",
+                "accept-language": "zh-CN,zh;q=0.9",
+                "sec-fetch-dest": "script",
+                "sec-fetch-mode": "no-cors",
+                "sec-fetch-site": "cross-site"
+            },
+            "method": "GET",
+        });
+        const reqPut = await fetch(`https://hq.sinajs.cn/list=${codePuts[1]},s_sh${etf}`, {
             "headers": {
                 "accept": "*/*",
                 "accept-language": "zh-CN,zh;q=0.9",
@@ -217,10 +230,70 @@ export class Options {
             "method": "GET",
         });
 
-        const rawCall = await reqCall.text();
+        const response = await Promise.all([reqCall, reqPut]);
 
-        console.log(rawCall);
+        const rawCallBuffer = await response[0].buffer();
+        const rawCall = iconv.decode(rawCallBuffer, 'GB18030');
+        const regCalls: RegExp = /(?<=").*?购.+?月.*?(?=")/gmi;
+        const calls = rawCall.match(regCalls) || ['Regex failed'];
 
+        const mappedCalls: IOption[] = calls.map(call => {
+            call = call.replace(/300etf购.+?月/i, `${etf}C${contract}M`);
+            const arr = call.split(',');
+            return {
+                'buyVol': parseFloat(arr[0]),
+                'buyPrice': parseFloat(arr[1]) * 1000,
+                'price': parseFloat(arr[2]) * 1000,
+                'sellPrice': parseFloat(arr[3]) * 1000,
+                'sellVol': parseFloat(arr[4]),
+                'position': parseFloat(arr[5]),
+                'changePercent': parseFloat(arr[6]),
+                'executionPrice': parseFloat(arr[7]) * 1000,
+                'code': arr[37] as string,
+            };
+        });
+
+        const rawPutBuffer = await response[1].buffer();
+        const rawPut = iconv.decode(rawPutBuffer, 'GB18030');
+        const regPuts: RegExp = /(?<=").*?沽.+?月.*?(?=")/gmi;
+        const puts = rawPut.match(regPuts) || ['Regex failed'];
+
+        const mappedPuts: IOption[] = puts.map(put => {
+            put = put.replace(/300etf沽.+?月/i, `${etf}P${contract}M`);
+            const arr = put.split(',');
+            return {
+                'buyVol': parseFloat(arr[0]),
+                'buyPrice': parseFloat(arr[1]) * 1000,
+                'price': parseFloat(arr[2]) * 1000,
+                'sellPrice': parseFloat(arr[3]) * 1000,
+                'sellVol': parseFloat(arr[4]),
+                'position': parseFloat(arr[5]),
+                'changePercent': parseFloat(arr[6]),
+                'executionPrice': parseFloat(arr[7]) * 1000,
+                'code': arr[37] as string,
+            };
+        });
+
+        const callPutPairs: IOptionPair[] = mappedCalls.map(call => {
+            const callCode: string = call.code;
+            const putCode = callCode.replace(/C/i, 'P');
+            let put = mappedPuts.find(put => put.code.toLowerCase() === putCode.toLowerCase());
+
+            if (!put) {
+                console.log('Somthing must be wrong!!!');
+                put = {} as IOption;
+            }
+
+            const pair: IOptionPair = {
+                call: call,
+                put: put
+            };
+
+            // console.log(pair);
+            return pair;
+        }).filter(pair => pair.call !== undefined && pair.put !== undefined);
+        
+        return callPutPairs;
     }
 
     private async getEastMoney300EtfOptions(contract: string) {
