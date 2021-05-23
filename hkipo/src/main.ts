@@ -2,43 +2,45 @@ import chalk from "chalk";
 // todo: What's the {} here?
 import { prompt } from 'enquirer';
 import { Fetcher } from "./fetcher";
-import { Options } from "./option/option";
+import { OptionCalculator } from "./option/optionCalculator";
 
-console.log('START!!!!!!!!!!!!!!');
-prompt({
-  type: 'input',
-  name: 'select',
-  message: chalk.yellowBright(`Choose options:\r\n`)
-    + chalk.yellow(`1. jsl`) + '\r\n'
-    + chalk.yellow(`2. Fetch IPO list`) + '\r\n'
-    + chalk.yellow(`3. Fetch IPO detail`) + '\r\n'
-    + chalk.yellow(`4. Combine output.`) + '\r\n'
-    + chalk.yellow(`5. Play!`) + '\r\n'
-    + chalk.yellow(`6. Option!`),
-}).then((response: any) => {
-  const fetcher = new Fetcher();
-  switch (response.select) {
-    case '2':
-      // fetcher.fetchAIpoToFile();
-      break;
-    case '3':
-      fetcher.fetchIpoDetail();
-      break;
-    case '4':
-      fetcher.combineOutput();
-      break;
-    case '5':
-      fetcher.play();
-      break;
-    case '6':
-      const options = new Options();
-      options.main();
-      break;
-    default:
-      console.log('Invalid choice.');
-      break;
-  }
-});
+console.log('START');
+const options = new OptionCalculator();
+options.main();
+// prompt({
+//   type: 'input',
+//   name: 'select',
+//   message: chalk.yellowBright(`Choose options:\r\n`)
+//     + chalk.yellow(`1. jsl`) + '\r\n'
+//     + chalk.yellow(`2. Fetch IPO list`) + '\r\n'
+//     + chalk.yellow(`3. Fetch IPO detail`) + '\r\n'
+//     + chalk.yellow(`4. Combine output.`) + '\r\n'
+//     + chalk.yellow(`5. Play!`) + '\r\n'
+//     + chalk.yellow(`6. Option!`),
+// }).then((response: any) => {
+//   const fetcher = new Fetcher();
+//   switch (response.select) {
+//     case '2':
+//       // fetcher.fetchAIpoToFile();
+//       break;
+//     case '3':
+//       fetcher.fetchIpoDetail();
+//       break;
+//     case '4':
+//       fetcher.combineOutput();
+//       break;
+//     case '5':
+//       fetcher.play();
+//       break;
+//     case '6':
+//       const options = new Options();
+//       options.main();
+//       break;
+//     default:
+//       console.log('Invalid choice.');
+//       break;
+//   }
+// });
 
 
 // // load fs
