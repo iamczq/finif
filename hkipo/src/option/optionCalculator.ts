@@ -11,31 +11,41 @@ export class OptionCalculator {
     }
 
     public async main() {
-        await this.calculatePremium('2109', 'etf');
-        await this.calculatePremium('2109', 'index');
+        const futuresPromise: {[contract: string]: Promise<string>} = {};
+        const etfOptionsPromise: {[contract: string]: Promise<IOptionPair[]>} = {};
+        const indexOptionsPromise: {[contract: string]: Promise<IOptionPair[]>} = {};
+        let contract = '';
 
-        await this.calculatePremium('2106', 'etf');
-        await this.calculatePremium('2106', 'index');
+        contract = '2109';
+        futuresPromise[contract] = this.getFutures(contract);
+        etfOptionsPromise[contract] = this.getSina300EtfOptions(contract);
+        indexOptionsPromise[contract] = this.getSina300IndexOptions(contract);
 
-        await this.calculatePremium('2105', 'etf');
-        await this.calculatePremium('2105', 'index');
+        // console.log(chalk.green(`${contract}: etf`));
+        // await this.calculatePremium(futuresPromise[contract], etfOptionsPromise[contract]);
+        // console.log(chalk.green(`${contract}: index`));
+        // await this.calculatePremium(futuresPromise[contract], indexOptionsPromise[contract]);
+
+        contract = '2106';
+        futuresPromise[contract] = this.getFutures(contract);
+        etfOptionsPromise[contract] = this.getSina300EtfOptions(contract);
+        indexOptionsPromise[contract] = this.getSina300IndexOptions(contract);
+
+        // console.log(chalk.green(`${contract}: etf`));
+        // await this.calculatePremium(futuresPromise[contract], etfOptionsPromise[contract]);
+        // console.log(chalk.green(`${contract}: index`));
+        // await this.calculatePremium(futuresPromise[contract], indexOptionsPromise[contract]);
+
+        contract = '2105';
+        etfOptionsPromise[contract] = this.getSina300EtfOptions(contract);
+
+        await this.watchMyPosition(etfOptionsPromise, indexOptionsPromise);
     }
 
-    public calculatePremium(contract: string, source: 'index' | 'etf') {
-        const futuresPromise = this.getFutures(contract);
-        let optionsPromise: Promise<IOptionPair[]>;
-        if (source === 'index') {
-            optionsPromise = this.getSina300IndexOptions(contract);
-        } else if (source === 'etf') {
-            optionsPromise = this.getSina300EtfOptions(contract);
-        } else {
-            // default
-            optionsPromise = this.getSina300IndexOptions(contract);
-        }
-
+    public calculatePremium(futuresPromise: Promise<string>, optionsPromise: Promise<IOptionPair[]>) {
         return Promise.all([futuresPromise, optionsPromise])
             .then(respone => {
-                console.log(chalk.green(`${contract}: ${source}`));
+                // console.log(chalk.green(`${contract}: ${source}`));
                 
                 // 1. Futures
                 const futures: string = respone[0];
@@ -103,6 +113,52 @@ export class OptionCalculator {
                         // console.log(`${p.code}: Long at ${p.longPremium}, short at ${futurePrice}. Premium: ${Math.round((futurePrice + p.longPremium) * 100) / 100}`);
                     });
             });
+    }
+
+    private watchMyPosition(
+        etfOptionsPromise: {[contract: string]: Promise<IOptionPair[]>},
+        indexOptionsPromise: {[contract: string]: Promise<IOptionPair[]>},
+    ) {
+        console.log(chalk.green(`Watch my position:`));
+
+        const etf2105 = etfOptionsPromise['2105'];
+        const etf2106 = etfOptionsPromise['2106'];
+        const index2106 = indexOptionsPromise['2106'];
+        
+        Promise.all([etf2105, etf2106, index2106]).then(response => {
+            let aCall = response[0].find(resp => {
+                return resp.code === '510300C2105M5000';
+            })?.call;
+
+            if (aCall !== undefined) {
+                console.log(chalk.red('BUY') +`510300C2105M5000 time value: ${aCall.timeValue()}`);
+            }
+
+            aCall = response[0].find(resp => {
+                return resp.code === '510300C2105M5250';
+            })?.call;
+
+            if (aCall !== undefined) {
+                console.log(chalk.red('BUY') + `510300C2105M5250 time value: ${aCall.timeValue()}`);
+            }
+
+            let index2106 = response[2].find(resp => {
+                return resp.code === 'io2106C5000';
+            });
+
+            if (index2106 !== undefined) {
+                console.log(chalk.green('SELL') + `io2106C5000 time value: ${index2106.call.timeValue()}`);
+            }
+
+            let etf2106 = response[1].find(resp => {
+                return resp.code === '510300C2106M5000';
+            });
+
+            if (etf2106 !== undefined) {
+                console.log(chalk.green('SELL') +`510300C2106M5000 time value: ${etf2106.call.timeValue()}`);
+            }
+
+        });
     }
 
     private async getFutures(contract: string) {

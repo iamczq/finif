@@ -11,7 +11,7 @@ export interface IOption {
     changePercent: number,
     underlyingPrice: number,
     // 风险值
-    // timeValue: number,
+    timeValue: () => number,
     // intrinsicValue: number,
     // delta: number,
     // gamma: number,
@@ -21,6 +21,7 @@ export interface IOption {
 }
 
 export interface IOptionPair {
+    code: string,
     call: IOption,
-    put: IOption
+    put: IOption,
 }

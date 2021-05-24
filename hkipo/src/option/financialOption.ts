@@ -57,7 +57,7 @@ export class FinancialOption implements IOption {
         // this.iv = initializer.iv;
     }
     
-    calculateTImeValue() {
-        // this._timeValue = 
+    timeValue(): number {
+        return Math.min(this.executionPrice - this.underlyingPrice, 0) + this.price;
     }
 }

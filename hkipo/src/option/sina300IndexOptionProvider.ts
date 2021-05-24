@@ -2,6 +2,7 @@ import fetch from 'node-fetch';
 import { FinancialOption } from "./financialOption";
 import { IDataProvider } from "./IDataProvider";
 import { IOption, IOptionPair } from "./IOption";
+import * as iconv from "iconv-lite";
 
 export class Sina300IndexOptionProvider implements IDataProvider<Promise<IOptionPair[]>>{    
     private contract: string
@@ -27,10 +28,27 @@ export class Sina300IndexOptionProvider implements IDataProvider<Promise<IOption
             "method": "GET",
         });
 
-        const resp = await req.json();
+        const indexReq = await fetch(`https://hq.sinajs.cn/list=sh000300`, {
+            "headers": {
+                "accept": "*/*",
+                "accept-language": "zh-CN,zh;q=0.9",
+                "sec-fetch-dest": "script",
+                "sec-fetch-mode": "no-cors",
+                "sec-fetch-site": "cross-site"
+            },
+            "method": "GET",
+        });
 
+        // Options
+        const resp = await req.json();
         const calls: any[][] = resp.result.data.up;
         const puts: any[][] = resp.result.data.down;
+
+        // Underlying
+        const indexRespBuffer = await indexReq.buffer();
+        const rawIndex = iconv.decode(indexRespBuffer, 'GB18030');
+        const regUnderlying = /(?<=hq_str_sh000300\=").*?(?=")/gmi;
+        const underlying = rawIndex.match(regUnderlying) || ['Regex failed'];
 
         const mappedCalls: IOption[] = calls.map(call => {
             if (call.length != 9) {
@@ -47,7 +65,7 @@ export class Sina300IndexOptionProvider implements IDataProvider<Promise<IOption
                 'changePercent': parseFloat(call[6]),
                 'executionPrice': parseFloat(call[7]),
                 'code': call[8] as string,
-                underlyingPrice: 0,
+                underlyingPrice: parseFloat(underlying[0].split(',')[3]),
             });
         });
 
@@ -66,7 +84,7 @@ export class Sina300IndexOptionProvider implements IDataProvider<Promise<IOption
                 'changePercent': parseFloat(put[6]),
                 'code': put[7] as string,
                 executionPrice: NaN,
-                underlyingPrice: 0,
+                underlyingPrice: parseFloat(underlying[0].split(',')[3]),
             });
         });
 
@@ -82,7 +100,8 @@ export class Sina300IndexOptionProvider implements IDataProvider<Promise<IOption
 
             const pair: IOptionPair = {
                 call: call,
-                put: put
+                put: put,
+                code: callCode,
             };
 
             // console.log(pair);
