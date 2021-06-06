@@ -11,9 +11,9 @@ export class OptionCalculator {
     }
 
     public async main() {
-        const futuresPromise: {[contract: string]: Promise<string>} = {};
-        const etfOptionsPromise: {[contract: string]: Promise<IOptionPair[]>} = {};
-        const indexOptionsPromise: {[contract: string]: Promise<IOptionPair[]>} = {};
+        const futuresPromise: { [contract: string]: Promise<string> } = {};
+        const etfOptionsPromise: { [contract: string]: Promise<IOptionPair[]> } = {};
+        const indexOptionsPromise: { [contract: string]: Promise<IOptionPair[]> } = {};
         let contract = '';
 
         contract = '2109';
@@ -21,32 +21,41 @@ export class OptionCalculator {
         etfOptionsPromise[contract] = this.getSina300EtfOptions(contract);
         indexOptionsPromise[contract] = this.getSina300IndexOptions(contract);
 
-        // console.log(chalk.green(`${contract}: etf`));
-        // await this.calculatePremium(futuresPromise[contract], etfOptionsPromise[contract]);
-        // console.log(chalk.green(`${contract}: index`));
-        // await this.calculatePremium(futuresPromise[contract], indexOptionsPromise[contract]);
+        console.log(chalk.green(`${contract}: etf`));
+        await this.calculatePremium(futuresPromise[contract], etfOptionsPromise[contract]);
+        console.log(chalk.green(`${contract}: index`));
+        await this.calculatePremium(futuresPromise[contract], indexOptionsPromise[contract]);
+
+        contract = '2107';
+        futuresPromise[contract] = this.getFutures(contract);
+        etfOptionsPromise[contract] = this.getSina300EtfOptions(contract);
+        indexOptionsPromise[contract] = this.getSina300IndexOptions(contract);
+
+        console.log(chalk.green(`${contract}: etf`));
+        await this.calculatePremium(futuresPromise[contract], etfOptionsPromise[contract]);
+        console.log(chalk.green(`${contract}: index`));
+        await this.calculatePremium(futuresPromise[contract], indexOptionsPromise[contract]);
 
         contract = '2106';
         futuresPromise[contract] = this.getFutures(contract);
         etfOptionsPromise[contract] = this.getSina300EtfOptions(contract);
         indexOptionsPromise[contract] = this.getSina300IndexOptions(contract);
 
-        // console.log(chalk.green(`${contract}: etf`));
-        // await this.calculatePremium(futuresPromise[contract], etfOptionsPromise[contract]);
-        // console.log(chalk.green(`${contract}: index`));
-        // await this.calculatePremium(futuresPromise[contract], indexOptionsPromise[contract]);
-
-        contract = '2105';
-        etfOptionsPromise[contract] = this.getSina300EtfOptions(contract);
+        console.log(chalk.green(`${contract}: etf`));
+        await this.calculatePremium(futuresPromise[contract], etfOptionsPromise[contract]);
+        console.log(chalk.green(`${contract}: index`));
+        await this.calculatePremium(futuresPromise[contract], indexOptionsPromise[contract]);
 
         await this.watchMyPosition(etfOptionsPromise, indexOptionsPromise);
+
+        await this.get50Etf();
     }
 
     public calculatePremium(futuresPromise: Promise<string>, optionsPromise: Promise<IOptionPair[]>) {
         return Promise.all([futuresPromise, optionsPromise])
             .then(respone => {
                 // console.log(chalk.green(`${contract}: ${source}`));
-                
+
                 // 1. Futures
                 const futures: string = respone[0];
                 const hqString: string = futures.substring(futures.indexOf('=') + 1);
@@ -69,15 +78,16 @@ export class OptionCalculator {
                         longOption = NaN;
                     } else {
                         shortOption = call.buyPrice - put.sellPrice + call.executionPrice;
-                        // console.log(call.buyPrice, put.sellPrice, call.executionPrice);
+                        //console.log(call.buyPrice, put.sellPrice, call.executionPrice, call.underlyingPrice);
                         longOption = - call.sellPrice + put.buyPrice - call.executionPrice;
                     }
                     return {
                         'code': call.code,
                         'shortOption': shortOption,
                         'longOption': longOption,
-                        'shortPremium': Math.round((shortOption - futurePrice) * 100) / 100,
-                        'longPremium': Math.round((futurePrice + longOption) * 100) / 100,
+                        'shortPremium': Math.round((shortOption - call.underlyingPrice) * 100) / 100,
+                        'longPremium': Math.round((call.underlyingPrice + longOption) * 100) / 100,
+                        underlyingPrice: call.underlyingPrice
                     };
                 }).filter(p => !Number.isNaN(p.shortOption));
 
@@ -85,7 +95,7 @@ export class OptionCalculator {
                     // Sort at liquidity
                     .sort((a, b) => (a.shortOption + a.longOption) - (b.shortOption + b.longOption))
                     .forEach(p => {
-                        console.log(`${p.code}: Short at ${p.shortOption}, long at ${futurePrice}. Premium: ${p.shortPremium}. Close at: ${p.longPremium}`);
+                        console.log(`${p.code}: Short at ${p.shortOption}, long at ${p.underlyingPrice}. Premium: ${p.shortPremium}. Close at: ${p.longPremium}`);
                     });
 
                 const longPremiumList = callPutPairs.map(pair => {
@@ -116,48 +126,84 @@ export class OptionCalculator {
     }
 
     private watchMyPosition(
-        etfOptionsPromise: {[contract: string]: Promise<IOptionPair[]>},
-        indexOptionsPromise: {[contract: string]: Promise<IOptionPair[]>},
+        etfOptionsPromise: { [contract: string]: Promise<IOptionPair[]> },
+        indexOptionsPromise: { [contract: string]: Promise<IOptionPair[]> },
     ) {
         console.log(chalk.green(`Watch my position:`));
 
-        const etf2105 = etfOptionsPromise['2105'];
+        const etf2109 = etfOptionsPromise['2109'];
+        const etf2107 = etfOptionsPromise['2107'];
         const etf2106 = etfOptionsPromise['2106'];
         const index2106 = indexOptionsPromise['2106'];
-        
-        Promise.all([etf2105, etf2106, index2106]).then(response => {
-            let aCall = response[0].find(resp => {
-                return resp.code === '510300C2105M5000';
-            })?.call;
 
-            if (aCall !== undefined) {
-                console.log(chalk.red('BUY') +`510300C2105M5000 time value: ${aCall.timeValue()}`);
-            }
+        Promise.all([etf2109, etf2107, etf2106, index2106]).then(response => {
+            const x = response[0].concat(response[1]).concat(response[2]);
 
-            aCall = response[0].find(resp => {
-                return resp.code === '510300C2105M5250';
-            })?.call;
-
-            if (aCall !== undefined) {
-                console.log(chalk.red('BUY') + `510300C2105M5250 time value: ${aCall.timeValue()}`);
-            }
-
-            let index2106 = response[2].find(resp => {
-                return resp.code === 'io2106C5000';
+            x.forEach(resp => {
+                if (resp.code === '510300C2105M5000') {
+                    console.log(chalk.red('BUY') + `510300C2105M5000 time value: ${resp.call.timeValue()}`);
+                }
             });
 
-            if (index2106 !== undefined) {
-                console.log(chalk.green('SELL') + `io2106C5000 time value: ${index2106.call.timeValue()}`);
-            }
-
-            let etf2106 = response[1].find(resp => {
-                return resp.code === '510300C2106M5000';
+            x.forEach(resp => {
+                if (resp.code === '510300C2105M5250') {
+                    console.log(chalk.red('BUY') + `510300C2105M5250 time value: ${resp.call.timeValue()}`);
+                }
             });
 
-            if (etf2106 !== undefined) {
-                console.log(chalk.green('SELL') +`510300C2106M5000 time value: ${etf2106.call.timeValue()}`);
-            }
+            x.forEach(resp => {
+                if (resp.code === 'io2106C5000') {
+                    console.log(chalk.green('SELL') + `io2106C5000 time value: ${resp.call.timeValue()}`);
+                }
+            });
 
+            x.forEach(resp => {
+                if (resp.code === '510300C2106M5000') {
+                    console.log(chalk.green('SELL') + `510300C2106M5000 time value: ${resp.call.timeValue()}`);
+                }
+            });
+
+            x.forEach(resp => {
+                if (resp.code === 'io2106C5200') {
+                    console.log(chalk.red('BUY') + `io2106C5200 time value: ${resp.call.timeValue()}. Price: ${resp.call.price}`);
+                }
+            });
+
+            x.forEach(resp => {
+                if (resp.code === 'io2106C5300') {
+                    console.log(chalk.red('BUY') + `io2106C5300 time value: ${resp.call.timeValue()}. Price: ${resp.call.buyPrice}`);
+                }
+            });
+
+            x.forEach(resp => {
+                if (resp.code === '510300C2106M5250') {
+                    console.log(chalk.green('SELL') + `510300C2106M5250 time value: ${resp.call.timeValue()}. Price: ${resp.call.sellPrice}`);
+                }
+            });
+
+            console.log('------------');
+            let total: number = 0;
+            let near: number = 0;
+            let far: number = 0;
+            x.forEach(resp => {
+                if (resp.code === '510300C2106M5500') {
+                    console.log(chalk.green('SELL') + `${resp.code} time value: ${resp.call.timeValue()}. Price: ${resp.call.buyPrice}`);
+                    console.log(chalk.green('BUY') + `${resp.code} time value: ${resp.put.timeValue()}. Price: ${resp.put.sellPrice}`);
+                    near = - resp.put.sellPrice + resp.call.buyPrice + resp.call.executionPrice - resp.call.underlyingPrice;
+                    total = - resp.put.sellPrice + resp.call.buyPrice + 250;
+                }
+            });
+
+            x.forEach(resp => {
+                if (resp.code === '510300C2109M5250') {
+                    console.log(chalk.green('BUY') + `${resp.code} time value: ${resp.call.timeValue()}. Price: ${resp.call.sellPrice}`);
+                    console.log(chalk.green('SELL') + `${resp.code} time value: ${resp.put.timeValue()}. Price: ${resp.put.buyPrice}`);
+                    total = total - resp.call.sellPrice + resp.put.buyPrice;
+                    far = - resp.call.sellPrice + resp.put.buyPrice - resp.call.executionPrice + resp.call.underlyingPrice;
+                }
+            });
+
+            console.log(`total ${total}, near ${near}, far ${far}`);
         });
     }
 
@@ -231,5 +277,26 @@ export class OptionCalculator {
             },
             "method": "GET",
         });
+    }
+
+    private async get50Etf() {
+
+        const req = await fetch(`https://hq.sinajs.cn/list=s_sh510050`, {
+            "headers": {
+                "accept": "*/*",
+                "accept-language": "zh-CN,zh;q=0.9",
+                "sec-fetch-dest": "script",
+                "sec-fetch-mode": "no-cors",
+                "sec-fetch-site": "cross-site"
+            },
+            "method": "GET",
+        });
+
+        const rawCallBuffer = await req.buffer();
+        const rawCall = iconv.decode(rawCallBuffer, 'GB18030');
+        const regUnderlying = /(?<=hq_str_s_sh510050\=").*?(?=")/gmi;
+        const underlying = rawCall.match(regUnderlying) || ['Regex failed'];;
+
+        console.log(chalk.red(`${underlying}`));
     }
 }
