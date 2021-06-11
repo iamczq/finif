@@ -137,51 +137,37 @@ export class OptionCalculator {
         const index2106 = indexOptionsPromise['2106'];
 
         Promise.all([etf2109, etf2107, etf2106, index2106]).then(response => {
-            const x = response[0].concat(response[1]).concat(response[2]);
+            const x = response[0].concat(response[1]).concat(response[2]).concat(response[3]);
 
             x.forEach(resp => {
-                if (resp.code === '510300C2105M5000') {
-                    console.log(chalk.red('BUY') + `510300C2105M5000 time value: ${resp.call.timeValue()}`);
+                if (resp.code === 'io2106C5500') {
+                    console.log(`${this.directionString('B')}: ${resp.code} time value: ${resp.call.timeValue()}`);
                 }
             });
 
             x.forEach(resp => {
-                if (resp.code === '510300C2105M5250') {
-                    console.log(chalk.red('BUY') + `510300C2105M5250 time value: ${resp.call.timeValue()}`);
+                if (resp.code === '510300C2106M5500') {
+                    console.log(`${this.directionString('S')}: ${resp.code} time value: ${resp.call.timeValue()}`);
                 }
             });
 
-            x.forEach(resp => {
-                if (resp.code === 'io2106C5000') {
-                    console.log(chalk.green('SELL') + `io2106C5000 time value: ${resp.call.timeValue()}`);
-                }
-            });
-
+            console.log('----------------------------------------');
+            let timeValue0 = 0;
+            let timeValue1 = 0;
             x.forEach(resp => {
                 if (resp.code === '510300C2106M5000') {
-                    console.log(chalk.green('SELL') + `510300C2106M5000 time value: ${resp.call.timeValue()}`);
+                    console.log(`${this.directionString('B')}: ${resp.code} time value: ${resp.call.timeValue()}`);
+                    timeValue0 = resp.call.timeValue();
+                }
+
+                if (resp.code === '510300C2107M5000') {
+                    console.log(`${this.directionString('S')}: ${resp.code} time value: ${resp.call.timeValue()}`);
+                    timeValue1 = resp.call.timeValue();
                 }
             });
+            console.log(`Time value delta JULY - JUN: ${timeValue1 - timeValue0}. (It was 50 on JUN 11th)`);
 
-            x.forEach(resp => {
-                if (resp.code === 'io2106C5200') {
-                    console.log(chalk.red('BUY') + `io2106C5200 time value: ${resp.call.timeValue()}. Price: ${resp.call.price}`);
-                }
-            });
-
-            x.forEach(resp => {
-                if (resp.code === 'io2106C5300') {
-                    console.log(chalk.red('BUY') + `io2106C5300 time value: ${resp.call.timeValue()}. Price: ${resp.call.buyPrice}`);
-                }
-            });
-
-            x.forEach(resp => {
-                if (resp.code === '510300C2106M5250') {
-                    console.log(chalk.green('SELL') + `510300C2106M5250 time value: ${resp.call.timeValue()}. Price: ${resp.call.sellPrice}`);
-                }
-            });
-
-            console.log('------------');
+            console.log('----------------------------------------');
             let total: number = 0;
             let near: number = 0;
             let far: number = 0;
@@ -298,5 +284,15 @@ export class OptionCalculator {
         const underlying = rawCall.match(regUnderlying) || ['Regex failed'];;
 
         console.log(chalk.red(`${underlying}`));
+    }
+
+    private directionString (direction: 'B' | 'S') {
+        if (direction === 'B') {
+            return chalk.red('BUY');
+        }
+
+        if (direction === 'S') {
+            return chalk.green('SELL');
+        }
     }
 }
