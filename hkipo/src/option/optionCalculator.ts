@@ -49,6 +49,8 @@ export class OptionCalculator {
         await this.watchMyPosition(etfOptionsPromise, indexOptionsPromise);
 
         await this.get50Etf();
+
+        await this.analyzeIC500();
     }
 
     public calculatePremium(futuresPromise: Promise<string>, optionsPromise: Promise<IOptionPair[]>) {
@@ -294,5 +296,31 @@ export class OptionCalculator {
         if (direction === 'S') {
             return chalk.green('SELL');
         }
+    }
+
+    private async analyzeIC500() {
+        const contract = 'sh000905,nf_IC2106,nf_IC2107,nf_IC2109,nf_IC2112';
+
+        const req = await fetch(`https://hq.sinajs.cn/?list=${contract}`, {
+            "method": "GET",
+        });
+
+        const resp = iconv.decode(await req.buffer(), 'GB18030');
+        const regIc = /(?<=var hq_str_nf_IC.*?\=").*?(?=")/gmi;
+        const matchIc = resp.match(regIc) || ['Regex failed'];
+
+        const thisMonth = parseFloat(matchIc[0].split(',')[3]);
+        const nextMonth = parseFloat(matchIc[1].split(',')[3]);
+        const nextQuarter = parseFloat(matchIc[2].split(',')[3]);
+        const otherQuarter = parseFloat(matchIc[3].split(',')[3]);
+
+        const regIndex = /(?<=hq_str_sh000905\=").*?(?=")/gmi;
+        const matchIndex = resp.match(regIndex) || ['Regex failed'];;
+        const index500 = parseFloat(matchIndex[0].split(',')[3]);
+
+        console.log(`This M ${index500 - thisMonth}`);
+        console.log(`Next M ${index500 - nextMonth}`);
+        console.log(`Next Q ${index500 - nextQuarter}`);
+        console.log(`Other Q ${index500 - otherQuarter}`);
     }
 }
