@@ -5,42 +5,43 @@ import { Fetcher } from "./fetcher";
 import { OptionCalculator } from "./option/optionCalculator";
 
 console.log('START');
-const options = new OptionCalculator();
-options.main();
-// prompt({
-//   type: 'input',
-//   name: 'select',
-//   message: chalk.yellowBright(`Choose options:\r\n`)
-//     + chalk.yellow(`1. jsl`) + '\r\n'
-//     + chalk.yellow(`2. Fetch IPO list`) + '\r\n'
-//     + chalk.yellow(`3. Fetch IPO detail`) + '\r\n'
-//     + chalk.yellow(`4. Combine output.`) + '\r\n'
-//     + chalk.yellow(`5. Play!`) + '\r\n'
-//     + chalk.yellow(`6. Option!`),
-// }).then((response: any) => {
-//   const fetcher = new Fetcher();
-//   switch (response.select) {
-//     case '2':
-//       // fetcher.fetchAIpoToFile();
-//       break;
-//     case '3':
-//       fetcher.fetchIpoDetail();
-//       break;
-//     case '4':
-//       fetcher.combineOutput();
-//       break;
-//     case '5':
-//       fetcher.play();
-//       break;
-//     case '6':
-//       const options = new Options();
-//       options.main();
-//       break;
-//     default:
-//       console.log('Invalid choice.');
-//       break;
-//   }
-// });
+prompt({
+  type: 'input',
+  name: 'select',
+  // message: chalk.yellowBright(`Choose options:\r\n`)
+  //   + chalk.yellow(`1. jsl`) + '\r\n'
+  //   + chalk.yellow(`2. Fetch IPO list`) + '\r\n'
+  //   + chalk.yellow(`3. Fetch IPO detail`) + '\r\n'
+  //   + chalk.yellow(`4. Combine output.`) + '\r\n'
+  //   + chalk.yellow(`5. Play!`) + '\r\n'
+  //   + chalk.yellow(`6. Option!`),
+    message: chalk.yellowBright(`Choose options:\r\n`)
+    + chalk.yellow(`1. all`) + '\r\n'
+    + chalk.yellow(`2. 50`) + '\r\n'
+    + chalk.yellow(`3. IC`) + '\r\n'
+    + chalk.yellow(`6. Option!`),
+}).then((response: any) => {
+  const fetcher = new Fetcher();
+  const options = new OptionCalculator();
+  switch (response.select) {
+    case '1':
+      options.main();
+      break;
+    case '2':
+      options.get50Etf();
+      break;
+    case '3':
+      options.analyzeIC500();
+      break;
+    case '4':
+      break;
+    case '5':
+      break;
+    default:
+      console.log('Invalid choice.');
+      break;
+  }
+});
 
 
 // // load fs

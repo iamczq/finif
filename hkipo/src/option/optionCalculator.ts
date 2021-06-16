@@ -5,6 +5,7 @@ import chalk from "chalk";
 import { FinancialOption } from './financialOption';
 import { Sina300EtfOptionProvider } from './sina300EtfOptionProvider';
 import { Sina300IndexOptionProvider } from './sina300IndexOptionProvider';
+import moment from 'moment';
 
 export class OptionCalculator {
     constructor() {
@@ -267,7 +268,7 @@ export class OptionCalculator {
         });
     }
 
-    private async get50Etf() {
+    public async get50Etf() {
 
         const req = await fetch(`https://hq.sinajs.cn/list=s_sh510050`, {
             "headers": {
@@ -298,8 +299,9 @@ export class OptionCalculator {
         }
     }
 
-    private async analyzeIC500() {
+    public async analyzeIC500() {
         const contract = 'sh000905,nf_IC2106,nf_IC2107,nf_IC2109,nf_IC2112';
+        const months = ['2021-06', '2021-07', '2021-09', '2021-12'];
 
         const req = await fetch(`https://hq.sinajs.cn/?list=${contract}`, {
             "method": "GET",
@@ -309,18 +311,29 @@ export class OptionCalculator {
         const regIc = /(?<=var hq_str_nf_IC.*?\=").*?(?=")/gmi;
         const matchIc = resp.match(regIc) || ['Regex failed'];
 
-        const thisMonth = parseFloat(matchIc[0].split(',')[3]);
-        const nextMonth = parseFloat(matchIc[1].split(',')[3]);
-        const nextQuarter = parseFloat(matchIc[2].split(',')[3]);
-        const otherQuarter = parseFloat(matchIc[3].split(',')[3]);
+        const thisMonthPrice = parseFloat(matchIc[0].split(',')[3]);
+        const nextMonthPrice = parseFloat(matchIc[1].split(',')[3]);
+        const nextQuarterPrice = parseFloat(matchIc[2].split(',')[3]);
+        const otherQuarterPrice = parseFloat(matchIc[3].split(',')[3]);
 
         const regIndex = /(?<=hq_str_sh000905\=").*?(?=")/gmi;
         const matchIndex = resp.match(regIndex) || ['Regex failed'];;
         const index500 = parseFloat(matchIndex[0].split(',')[3]);
 
-        console.log(`This M ${index500 - thisMonth}`);
-        console.log(`Next M ${index500 - nextMonth}`);
-        console.log(`Next Q ${index500 - nextQuarter}`);
-        console.log(`Other Q ${index500 - otherQuarter}`);
+        const now = moment();
+        const thisMonthDelivery =  moment(months[0]).day(14 + 5);
+        const nextMonthDelivery = moment(months[1]).day(14 + 5);
+        const nextQuarterDelivery = moment(months[2]).day(14 + 5);
+        const otherQuarterDelivery = moment(months[3]).day(14 + 5);
+
+        const daysThisMonth = moment.duration(thisMonthDelivery.diff(now)).asDays();
+        const daysNextMonth = moment.duration(nextMonthDelivery.diff(now)).asDays();
+        const daysNextQuarter = moment.duration(nextQuarterDelivery.diff(now)).asDays();
+        const daysOtherQuarter = moment.duration(otherQuarterDelivery.diff(now)).asDays();
+        
+        console.log(`This M ${index500 - thisMonthPrice}, AVG: ${(index500 - thisMonthPrice) / daysThisMonth}`);
+        console.log(`Next M ${index500 - nextMonthPrice}, AVG: ${(index500 - nextMonthPrice) / daysNextMonth}`);
+        console.log(`Next Q ${index500 - nextQuarterPrice}, AVG: ${(index500 - nextQuarterPrice) / daysNextQuarter}`);
+        console.log(`Other Q ${index500 - otherQuarterPrice}, AVG: ${(index500 - otherQuarterPrice) / daysOtherQuarter}`);
     }
 }
