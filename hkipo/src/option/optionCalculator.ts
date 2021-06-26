@@ -27,7 +27,7 @@ export class OptionCalculator {
         console.log(chalk.green(`${contract}: index`));
         await this.calculatePremium(futuresPromise[contract], indexOptionsPromise[contract]);
 
-        contract = '2107';
+        contract = '2108';
         futuresPromise[contract] = this.getFutures(contract);
         etfOptionsPromise[contract] = this.getSina300EtfOptions(contract);
         indexOptionsPromise[contract] = this.getSina300IndexOptions(contract);
@@ -37,7 +37,7 @@ export class OptionCalculator {
         console.log(chalk.green(`${contract}: index`));
         await this.calculatePremium(futuresPromise[contract], indexOptionsPromise[contract]);
 
-        contract = '2106';
+        contract = '2107';
         futuresPromise[contract] = this.getFutures(contract);
         etfOptionsPromise[contract] = this.getSina300EtfOptions(contract);
         indexOptionsPromise[contract] = this.getSina300IndexOptions(contract);
@@ -49,9 +49,9 @@ export class OptionCalculator {
 
         await this.watchMyPosition(etfOptionsPromise, indexOptionsPromise);
 
-        await this.get50Etf();
+        // await this.get50Etf();
 
-        await this.analyzeIC500();
+        // await this.analyzeIC500();
     }
 
     public calculatePremium(futuresPromise: Promise<string>, optionsPromise: Promise<IOptionPair[]>) {
@@ -135,64 +135,100 @@ export class OptionCalculator {
         console.log(chalk.green(`Watch my position:`));
 
         const etf2109 = etfOptionsPromise['2109'];
-        const etf2107 = etfOptionsPromise['2107'];
-        const etf2106 = etfOptionsPromise['2106'];
-        const index2106 = indexOptionsPromise['2106'];
+        const etf2107 = etfOptionsPromise['2108'];
+        const etf2106 = etfOptionsPromise['2107'];
+        const index2106 = indexOptionsPromise['2107'];
 
         Promise.all([etf2109, etf2107, etf2106, index2106]).then(response => {
             const x = response[0].concat(response[1]).concat(response[2]).concat(response[3]);
 
             x.forEach(resp => {
-                if (resp.code === 'io2106C5500') {
-                    console.log(`${this.directionString('B')}: ${resp.code} time value: ${resp.call.timeValue()}`);
+                if (resp.code === 'io2107C5200') {
+                    console.log(`${this.directionString('B')}: ${resp.code} time value: ${resp.call.timeValue()} price: ${resp.call.price}`);
                 }
             });
 
             x.forEach(resp => {
-                if (resp.code === '510300C2106M5500') {
-                    console.log(`${this.directionString('S')}: ${resp.code} time value: ${resp.call.timeValue()}`);
+                if (resp.code === '510300C2107M5250') {
+                    console.log(`${this.directionString('S')}: ${resp.code} time value: ${resp.call.timeValue()} price: ${resp.call.price}`);
+                }
+            });
+
+            x.forEach(resp => {
+                if (resp.code === 'io2107C5500') {
+                    console.log(`${this.directionString('B')}: ${resp.code} time value: ${resp.call.timeValue()} price: ${resp.call.price}`);
+                }
+            });
+
+            x.forEach(resp => {
+                if (resp.code === '510300C2107M5500') {
+                    console.log(`${this.directionString('S')}: ${resp.code} time value: ${resp.call.timeValue()} price: ${resp.call.price}`);
                 }
             });
 
             console.log('----------------------------------------');
-            let timeValue0 = 0;
-            let timeValue1 = 0;
+            let timeValueFront = 0;
+            let timeValueNext = 0;
+            let timeValueFar = 0;
             x.forEach(resp => {
-                if (resp.code === '510300C2106M5000') {
-                    console.log(`${this.directionString('B')}: ${resp.code} time value: ${resp.call.timeValue()}`);
-                    timeValue0 = resp.call.timeValue();
-                }
-
                 if (resp.code === '510300C2107M5000') {
+                    console.log(`${this.directionString('B')}: ${resp.code} time value: ${resp.call.timeValue()}`);
+                    timeValueFront = resp.call.timeValue();
+                }
+
+                if (resp.code === '510300C2108M5000') {
                     console.log(`${this.directionString('S')}: ${resp.code} time value: ${resp.call.timeValue()}`);
-                    timeValue1 = resp.call.timeValue();
+                    timeValueNext = resp.call.timeValue();
+                }
+
+                if (resp.code === '510300C2109M5000') {
+                    console.log(`${this.directionString('B')}: ${resp.code} time value: ${resp.call.timeValue()}`);
+                    timeValueFar = resp.call.timeValue();
                 }
             });
-            console.log(`Time value delta JULY - JUN: ${timeValue1 - timeValue0}. (It was 50 on JUN 11th)`);
+            console.log(`Time value delta AUG - JULY: ${timeValueNext - timeValueFront}. (It was 32 on JUN 24th. Last time change: 65.)`);
+            console.log(`Time value delta SEP - JULY: ${timeValueFar - timeValueFront}. (It was 58 on JUN 20th)`);
 
             console.log('----------------------------------------');
-            let total: number = 0;
-            let near: number = 0;
-            let far: number = 0;
+            let nearShortOppositePrice: number = 0;
+            let farLongOppositePrice: number = 0;
+            let nearShortCurrentPrice: number = 0;
+            let farLongCurrentPrice: number = 0;
+            let nearLongOppositePrice: number = 0;
+            let farShortOppositePrice: number = 0;
             x.forEach(resp => {
-                if (resp.code === '510300C2106M5500') {
-                    console.log(chalk.green('SELL') + `${resp.code} time value: ${resp.call.timeValue()}. Price: ${resp.call.buyPrice}`);
-                    console.log(chalk.green('BUY') + `${resp.code} time value: ${resp.put.timeValue()}. Price: ${resp.put.sellPrice}`);
-                    near = - resp.put.sellPrice + resp.call.buyPrice + resp.call.executionPrice - resp.call.underlyingPrice;
-                    total = - resp.put.sellPrice + resp.call.buyPrice + 250;
+                if (resp.code === '510300C2108M5500') {
+                    console.log(`${this.directionString('S')}: ${resp.code} time value: ${resp.call.timeValue()}. Buy Price: ${resp.call.buyPrice}. Sell Price: ${resp.call.sellPrice}`);
+                    console.log(`${this.directionString('B')}: ${resp.code} time value: ${resp.put.timeValue()}. Buy Price: ${resp.put.buyPrice}. Sell Price: ${resp.put.sellPrice}`);
+                    const changeShortOppositePrice = - resp.put.sellPrice + resp.call.buyPrice + resp.call.executionPrice - resp.call.underlyingPrice;
+                    const changeLongOppositePrice = resp.put.buyPrice - resp.call.sellPrice - resp.call.executionPrice + resp.call.underlyingPrice;
+                    console.log(`What if change ${resp.code}`, changeShortOppositePrice, changeShortOppositePrice);
+                }
+            });
+
+            x.forEach(resp => {
+                if (resp.code === '510300C2107M5500') {
+                    console.log(`${this.directionString('S')}: ${resp.code} time value: ${resp.call.timeValue()}. Buy Price: ${resp.call.buyPrice}. Sell Price: ${resp.call.sellPrice}`);
+                    console.log(`${this.directionString('B')}: ${resp.code} time value: ${resp.put.timeValue()}. Buy Price: ${resp.put.buyPrice}. Sell Price: ${resp.put.sellPrice}`);
+                    nearShortOppositePrice = - resp.put.sellPrice + resp.call.buyPrice + resp.call.executionPrice - resp.call.underlyingPrice;
+                    nearLongOppositePrice = resp.put.buyPrice - resp.call.sellPrice - resp.call.executionPrice + resp.call.underlyingPrice;
+                    nearShortCurrentPrice = - resp.put.price + resp.call.price + resp.call.executionPrice - resp.call.underlyingPrice;
                 }
             });
 
             x.forEach(resp => {
                 if (resp.code === '510300C2109M5250') {
-                    console.log(chalk.green('BUY') + `${resp.code} time value: ${resp.call.timeValue()}. Price: ${resp.call.sellPrice}`);
-                    console.log(chalk.green('SELL') + `${resp.code} time value: ${resp.put.timeValue()}. Price: ${resp.put.buyPrice}`);
-                    total = total - resp.call.sellPrice + resp.put.buyPrice;
-                    far = - resp.call.sellPrice + resp.put.buyPrice - resp.call.executionPrice + resp.call.underlyingPrice;
+                    console.log(`${this.directionString('B')}: ${resp.code} time value: ${resp.call.timeValue()}. Buy Price: ${resp.call.buyPrice}. Sell Price: ${resp.call.sellPrice}`);
+                    console.log(`${this.directionString('S')}: ${resp.code} time value: ${resp.put.timeValue()}. Buy Price: ${resp.put.buyPrice}. Sell Price: ${resp.put.sellPrice}`);
+                    farLongOppositePrice = - resp.call.sellPrice + resp.put.buyPrice - resp.call.executionPrice + resp.call.underlyingPrice;
+                    farLongCurrentPrice = - resp.call.price + resp.put.price - resp.call.executionPrice + resp.call.underlyingPrice;
+                    farShortOppositePrice = resp.call.buyPrice - resp.put.sellPrice + resp.call.executionPrice - resp.call.underlyingPrice;
                 }
             });
 
-            console.log(`total ${total}, near ${near}, far ${far}`);
+            console.log(`Opposite price open: total ${nearShortOppositePrice + farLongOppositePrice}, near ${nearShortOppositePrice}, far ${farLongOppositePrice}`);
+            console.log(`Current price open: total ${nearShortCurrentPrice + farLongCurrentPrice}, near ${nearShortCurrentPrice}, far ${farLongCurrentPrice}`);
+            console.log(`Opposite price close: total ${nearLongOppositePrice + farShortOppositePrice}, near ${nearLongOppositePrice}, far ${farShortOppositePrice}`);
         });
     }
 
@@ -300,8 +336,8 @@ export class OptionCalculator {
     }
 
     public async analyzeIC500() {
-        const contract = 'sh000905,nf_IC2106,nf_IC2107,nf_IC2109,nf_IC2112';
-        const months = ['2021-06', '2021-07', '2021-09', '2021-12'];
+        const contract = 'sh000905,nf_IC2107,nf_IC2108,nf_IC2109,nf_IC2112';
+        const months = ['2021-07', '2021-08', '2021-09', '2021-12'];
 
         const req = await fetch(`https://hq.sinajs.cn/?list=${contract}`, {
             "method": "GET",
@@ -331,9 +367,23 @@ export class OptionCalculator {
         const daysNextQuarter = moment.duration(nextQuarterDelivery.diff(now)).asDays();
         const daysOtherQuarter = moment.duration(otherQuarterDelivery.diff(now)).asDays();
         
-        console.log(`This M ${index500 - thisMonthPrice}, AVG: ${(index500 - thisMonthPrice) / daysThisMonth}`);
-        console.log(`Next M ${index500 - nextMonthPrice}, AVG: ${(index500 - nextMonthPrice) / daysNextMonth}`);
-        console.log(`Next Q ${index500 - nextQuarterPrice}, AVG: ${(index500 - nextQuarterPrice) / daysNextQuarter}`);
-        console.log(`Other Q ${index500 - otherQuarterPrice}, AVG: ${(index500 - otherQuarterPrice) / daysOtherQuarter}`);
+        console.log(`${index500}, ${index500 * 200 * 0.17}`);
+        console.log(`This M ${thisMonthPrice}, ${index500 - thisMonthPrice}, AVG: ${(index500 - thisMonthPrice) / daysThisMonth}`);
+        console.log(`Next M ${nextMonthPrice}, ${index500 - nextMonthPrice}, AVG: ${(index500 - nextMonthPrice) / daysNextMonth}`);
+        console.log(`Next Q ${nextQuarterPrice}, ${index500 - nextQuarterPrice}, AVG: ${(index500 - nextQuarterPrice) / daysNextQuarter}`);
+        console.log(`Other Q ${otherQuarterPrice}, ${index500 - otherQuarterPrice}, AVG: ${(index500 - otherQuarterPrice) / daysOtherQuarter}`);
+    }
+
+    public getCurrentContracts(): string[] {
+        const now = moment();
+
+        console.log(now, now.date());
+        if (now > now.day(14 + 5)) {
+            console.log(11);
+        } else {
+            console.log(22);
+        }
+
+        return [];
     }
 }

@@ -34,6 +34,7 @@ prompt({
       options.analyzeIC500();
       break;
     case '4':
+      options.getCurrentContracts();
       break;
     case '5':
       break;

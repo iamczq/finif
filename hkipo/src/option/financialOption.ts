@@ -38,7 +38,7 @@ export class FinancialOption implements IOption {
         // vega?: number,
         // iv?: number,
     }) {
-        this.code = initializer.code;initializer.code;
+        this.code = initializer.code; initializer.code;
         this.executionPrice = initializer.executionPrice;
         this.price = initializer.price;
         this.buyVol = initializer.buyVol;
@@ -56,8 +56,25 @@ export class FinancialOption implements IOption {
         // this.vega = initializer.vega;
         // this.iv = initializer.iv;
     }
-    
+
     timeValue(): number {
-        return Math.min(this.executionPrice - this.underlyingPrice, 0) + this.price;
+        // console.log(this.code, this.executionPrice, this.underlyingPrice, this.price);
+
+        let callPut;
+        if (this.code.toUpperCase().indexOf('C') > 0) {
+            callPut = 'C';
+        } else if (this.code.toUpperCase().indexOf('P') > 0) {
+            callPut = 'P';
+        } else {
+            console.log(`Wrong code: ${this.code}`);
+        }
+
+        if (callPut === 'C') {
+            return Math.min(this.executionPrice - this.underlyingPrice, 0) + this.price;
+        } else if (callPut === 'P') {
+            return Math.min(this.underlyingPrice - this.executionPrice, 0) + this.price;
+        } else {
+            return -10000;
+        }
     }
 }
