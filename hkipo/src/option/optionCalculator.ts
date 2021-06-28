@@ -17,6 +17,30 @@ export class OptionCalculator {
         const indexOptionsPromise: { [contract: string]: Promise<IOptionPair[]> } = {};
         let contract = '';
 
+        contract = '2206';
+        futuresPromise[contract] = this.getFutures(contract);
+        indexOptionsPromise[contract] = this.getSina300IndexOptions(contract);
+
+        console.log(chalk.green(`${contract}: index`));
+        await this.calculatePremium(futuresPromise[contract], indexOptionsPromise[contract]);
+
+        contract = '2203';
+        futuresPromise[contract] = this.getFutures(contract);
+        indexOptionsPromise[contract] = this.getSina300IndexOptions(contract);
+
+        console.log(chalk.green(`${contract}: index`));
+        await this.calculatePremium(futuresPromise[contract], indexOptionsPromise[contract]);
+
+        contract = '2112';
+        futuresPromise[contract] = this.getFutures(contract);
+        etfOptionsPromise[contract] = this.getSina300EtfOptions(contract);
+        indexOptionsPromise[contract] = this.getSina300IndexOptions(contract);
+
+        console.log(chalk.green(`${contract}: etf`));
+        await this.calculatePremium(futuresPromise[contract], etfOptionsPromise[contract]);
+        console.log(chalk.green(`${contract}: index`));
+        await this.calculatePremium(futuresPromise[contract], indexOptionsPromise[contract]);
+
         contract = '2109';
         futuresPromise[contract] = this.getFutures(contract);
         etfOptionsPromise[contract] = this.getSina300EtfOptions(contract);
@@ -98,7 +122,7 @@ export class OptionCalculator {
                     // Sort at liquidity
                     .sort((a, b) => (a.shortOption + a.longOption) - (b.shortOption + b.longOption))
                     .forEach(p => {
-                        console.log(`${p.code}: Short at ${p.shortOption}, long at ${p.underlyingPrice}. Premium: ${p.shortPremium}. Close at: ${p.longPremium}`);
+                        console.log(`${p.code}: Short at ${p.shortOption}, Underlying at ${p.underlyingPrice}. Short premium: ${p.shortPremium}. Long premium: ${p.longPremium}`);
                     });
 
                 const longPremiumList = callPutPairs.map(pair => {
@@ -134,13 +158,18 @@ export class OptionCalculator {
     ) {
         console.log(chalk.green(`Watch my position:`));
 
+        const etf2112 = etfOptionsPromise['2112'];
         const etf2109 = etfOptionsPromise['2109'];
         const etf2107 = etfOptionsPromise['2108'];
         const etf2106 = etfOptionsPromise['2107'];
         const index2106 = indexOptionsPromise['2107'];
 
-        Promise.all([etf2109, etf2107, etf2106, index2106]).then(response => {
-            const x = response[0].concat(response[1]).concat(response[2]).concat(response[3]);
+        Promise.all([etf2112, etf2109, etf2107, etf2106, index2106]).then(response => {
+            const x = response.reduce((prev, current) => {
+                return prev.concat(current);
+            });
+            
+            // response[0].concat(response[1]).concat(response[2]).concat(response[3]);
 
             x.forEach(resp => {
                 if (resp.code === 'io2107C5200') {
