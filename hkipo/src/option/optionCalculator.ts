@@ -163,8 +163,9 @@ export class OptionCalculator {
         const etf2107 = etfOptionsPromise['2108'];
         const etf2106 = etfOptionsPromise['2107'];
         const index2106 = indexOptionsPromise['2107'];
+        const index2112 = indexOptionsPromise['2112'];
 
-        Promise.all([etf2112, etf2109, etf2107, etf2106, index2106]).then(response => {
+        Promise.all([etf2112, etf2109, etf2107, etf2106, index2106, index2112]).then(response => {
             const x = response.reduce((prev, current) => {
                 return prev.concat(current);
             });
@@ -225,10 +226,12 @@ export class OptionCalculator {
             let farLongCurrentPrice: number = 0;
             let nearLongOppositePrice: number = 0;
             let farShortOppositePrice: number = 0;
+            let nearUnderlying: number = 0;
+            let farUnderlying: number = 0;
             x.forEach(resp => {
                 if (resp.code === '510300C2108M5500') {
-                    console.log(`${this.directionString('S')}: ${resp.code} time value: ${resp.call.timeValue()}. Buy Price: ${resp.call.buyPrice}. Sell Price: ${resp.call.sellPrice}`);
-                    console.log(`${this.directionString('B')}: ${resp.code} time value: ${resp.put.timeValue()}. Buy Price: ${resp.put.buyPrice}. Sell Price: ${resp.put.sellPrice}`);
+                    console.log(`${this.directionString('S')}: ${resp.call.code} time value: ${resp.call.timeValue()}. Buy Price: ${resp.call.buyPrice}. Sell Price: ${resp.call.sellPrice}`);
+                    console.log(`${this.directionString('B')}: ${resp.put.code} time value: ${resp.put.timeValue()}. Buy Price: ${resp.put.buyPrice}. Sell Price: ${resp.put.sellPrice}`);
                     const changeShortOppositePrice = - resp.put.sellPrice + resp.call.buyPrice + resp.call.executionPrice - resp.call.underlyingPrice;
                     const changeLongOppositePrice = resp.put.buyPrice - resp.call.sellPrice - resp.call.executionPrice + resp.call.underlyingPrice;
                     console.log(`What if change ${resp.code}`, changeShortOppositePrice, changeShortOppositePrice);
@@ -237,27 +240,30 @@ export class OptionCalculator {
 
             x.forEach(resp => {
                 if (resp.code === '510300C2107M5500') {
-                    console.log(`${this.directionString('S')}: ${resp.code} time value: ${resp.call.timeValue()}. Buy Price: ${resp.call.buyPrice}. Sell Price: ${resp.call.sellPrice}`);
-                    console.log(`${this.directionString('B')}: ${resp.code} time value: ${resp.put.timeValue()}. Buy Price: ${resp.put.buyPrice}. Sell Price: ${resp.put.sellPrice}`);
+                    console.log(`${this.directionString('S')}: ${resp.call.code} time value: ${resp.call.timeValue()}. Buy Price: ${resp.call.buyPrice}. Sell Price: ${resp.call.sellPrice}`);
+                    console.log(`${this.directionString('B')}: ${resp.put.code} time value: ${resp.put.timeValue()}. Buy Price: ${resp.put.buyPrice}. Sell Price: ${resp.put.sellPrice}`);
                     nearShortOppositePrice = - resp.put.sellPrice + resp.call.buyPrice + resp.call.executionPrice - resp.call.underlyingPrice;
                     nearLongOppositePrice = resp.put.buyPrice - resp.call.sellPrice - resp.call.executionPrice + resp.call.underlyingPrice;
                     nearShortCurrentPrice = - resp.put.price + resp.call.price + resp.call.executionPrice - resp.call.underlyingPrice;
+                    nearUnderlying = resp.call.underlyingPrice;
                 }
             });
 
             x.forEach(resp => {
-                if (resp.code === '510300C2109M5250') {
-                    console.log(`${this.directionString('B')}: ${resp.code} time value: ${resp.call.timeValue()}. Buy Price: ${resp.call.buyPrice}. Sell Price: ${resp.call.sellPrice}`);
-                    console.log(`${this.directionString('S')}: ${resp.code} time value: ${resp.put.timeValue()}. Buy Price: ${resp.put.buyPrice}. Sell Price: ${resp.put.sellPrice}`);
+                if (resp.code === 'io2112C4900') {
+                    console.log(`${this.directionString('B')}: ${resp.call.code} time value: ${resp.call.timeValue()}. Buy Price: ${resp.call.buyPrice}. Sell Price: ${resp.call.sellPrice}`);
+                    console.log(`${this.directionString('S')}: ${resp.put.code} time value: ${resp.put.timeValue()}. Buy Price: ${resp.put.buyPrice}. Sell Price: ${resp.put.sellPrice}`);
                     farLongOppositePrice = - resp.call.sellPrice + resp.put.buyPrice - resp.call.executionPrice + resp.call.underlyingPrice;
                     farLongCurrentPrice = - resp.call.price + resp.put.price - resp.call.executionPrice + resp.call.underlyingPrice;
                     farShortOppositePrice = resp.call.buyPrice - resp.put.sellPrice + resp.call.executionPrice - resp.call.underlyingPrice;
+                    farUnderlying = resp.call.underlyingPrice;
                 }
             });
 
-            console.log(`Opposite price open: total ${nearShortOppositePrice + farLongOppositePrice}, near ${nearShortOppositePrice}, far ${farLongOppositePrice}`);
-            console.log(`Current price open: total ${nearShortCurrentPrice + farLongCurrentPrice}, near ${nearShortCurrentPrice}, far ${farLongCurrentPrice}`);
-            console.log(`Opposite price close: total ${nearLongOppositePrice + farShortOppositePrice}, near ${nearLongOppositePrice}, far ${farShortOppositePrice}`);
+            console.log(`Opposite price open: total ${(nearShortOppositePrice + farLongOppositePrice).toFixed(2)}, near ${nearShortOppositePrice.toFixed(2)}, far ${farLongOppositePrice.toFixed(2)}`);
+            console.log(`Current price open: total ${(nearShortCurrentPrice + farLongCurrentPrice).toFixed(2)}, near ${nearShortCurrentPrice.toFixed(2)}, far ${farLongCurrentPrice.toFixed(2)}`);
+            console.log(`Opposite price close: total ${(nearLongOppositePrice + farShortOppositePrice).toFixed(2)}, near ${nearLongOppositePrice.toFixed(2)}, far ${farShortOppositePrice.toFixed(2)}`);
+            console.log(`Underlying, near: ${nearUnderlying}, far: ${farUnderlying}, differences: ${(nearUnderlying - farUnderlying).toFixed(2)}`);
         });
     }
 
