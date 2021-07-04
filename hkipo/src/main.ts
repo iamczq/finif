@@ -19,6 +19,7 @@ prompt({
     + chalk.yellow(`1. all`) + '\r\n'
     + chalk.yellow(`2. 50`) + '\r\n'
     + chalk.yellow(`3. IC`) + '\r\n'
+    + chalk.yellow(`4. 50 option`) + '\r\n'
     + chalk.yellow(`6. Option!`),
 }).then((response: any) => {
   const fetcher = new Fetcher();
@@ -34,9 +35,7 @@ prompt({
       options.analyzeIC500();
       break;
     case '4':
-      options.getCurrentContracts();
-      break;
-    case '5':
+      options.analyze50etf();
       break;
     default:
       console.log('Invalid choice.');

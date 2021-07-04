@@ -3,7 +3,7 @@ import { IOption, IOptionPair } from './IOption';
 import * as iconv from "iconv-lite";
 import chalk from "chalk";
 import { FinancialOption } from './financialOption';
-import { Sina300EtfOptionProvider } from './sina300EtfOptionProvider';
+import { SinaEtfOptionProvider } from './sina300EtfOptionProvider';
 import { Sina300IndexOptionProvider } from './sina300IndexOptionProvider';
 import moment from 'moment';
 
@@ -84,7 +84,7 @@ export class OptionCalculator {
                 // console.log(chalk.green(`${contract}: ${source}`));
 
                 // 1. Futures
-                const futures: string = respone[0];
+                const futures: string = respone[0] || '';
                 const hqString: string = futures.substring(futures.indexOf('=') + 1);
                 const hqArray = hqString.split(',');
                 const futurePrice = parseFloat(hqArray[3]);
@@ -105,7 +105,7 @@ export class OptionCalculator {
                         longOption = NaN;
                     } else {
                         shortOption = call.buyPrice - put.sellPrice + call.executionPrice;
-                        //console.log(call.buyPrice, put.sellPrice, call.executionPrice, call.underlyingPrice);
+                        // console.log(call.buyPrice, put.sellPrice, call.executionPrice, call.underlyingPrice);
                         longOption = - call.sellPrice + put.buyPrice - call.executionPrice;
                     }
                     return {
@@ -169,7 +169,7 @@ export class OptionCalculator {
             const x = response.reduce((prev, current) => {
                 return prev.concat(current);
             });
-            
+
             // response[0].concat(response[1]).concat(response[2]).concat(response[3]);
 
             x.forEach(resp => {
@@ -291,7 +291,12 @@ export class OptionCalculator {
     }
 
     public async getSina300EtfOptions(contract: string): Promise<IOptionPair[]> {
-        const provider = new Sina300EtfOptionProvider(contract);
+        const provider = new SinaEtfOptionProvider('510300', contract);
+        return provider.getData();
+    }
+
+    public async getSina50EtfOptions(contract: string): Promise<IOptionPair[]> {
+        const provider = new SinaEtfOptionProvider('510050', contract);
         return provider.getData();
     }
 
@@ -360,7 +365,7 @@ export class OptionCalculator {
         console.log(chalk.red(`${underlying}`));
     }
 
-    private directionString (direction: 'B' | 'S') {
+    private directionString(direction: 'B' | 'S') {
         if (direction === 'B') {
             return chalk.red('BUY');
         }
@@ -392,7 +397,7 @@ export class OptionCalculator {
         const index500 = parseFloat(matchIndex[0].split(',')[3]);
 
         const now = moment();
-        const thisMonthDelivery =  moment(months[0]).day(14 + 5);
+        const thisMonthDelivery = moment(months[0]).day(14 + 5);
         const nextMonthDelivery = moment(months[1]).day(14 + 5);
         const nextQuarterDelivery = moment(months[2]).day(14 + 5);
         const otherQuarterDelivery = moment(months[3]).day(14 + 5);
@@ -401,7 +406,7 @@ export class OptionCalculator {
         const daysNextMonth = moment.duration(nextMonthDelivery.diff(now)).asDays();
         const daysNextQuarter = moment.duration(nextQuarterDelivery.diff(now)).asDays();
         const daysOtherQuarter = moment.duration(otherQuarterDelivery.diff(now)).asDays();
-        
+
         console.log(`${index500}, ${index500 * 200 * 0.17}`);
         console.log(`This M ${thisMonthPrice}, ${index500 - thisMonthPrice}, AVG: ${(index500 - thisMonthPrice) / daysThisMonth}`);
         console.log(`Next M ${nextMonthPrice}, ${index500 - nextMonthPrice}, AVG: ${(index500 - nextMonthPrice) / daysNextMonth}`);
@@ -420,5 +425,39 @@ export class OptionCalculator {
         }
 
         return [];
+    }
+
+    public async analyze50etf() {
+        const futuresPromise: { [contract: string]: Promise<string> } = {};
+        const etfOptionsPromise: { [contract: string]: Promise<IOptionPair[]> } = {};
+        const indexOptionsPromise: { [contract: string]: Promise<IOptionPair[]> } = {};
+        let contract = '';
+        const x = new Promise<string>((resolve, reject) => {
+            setTimeout(resolve, 0);
+        });
+
+        contract = '2112';
+        etfOptionsPromise[contract] = this.getSina50EtfOptions(contract);
+
+        console.log(chalk.green(`${contract}: etf`));
+        await this.calculatePremium(x, etfOptionsPromise[contract]);
+
+        contract = '2109';
+        etfOptionsPromise[contract] = this.getSina50EtfOptions(contract);
+
+        console.log(chalk.green(`${contract}: etf`));
+        await this.calculatePremium(x, etfOptionsPromise[contract]);
+
+        contract = '2108';
+        etfOptionsPromise[contract] = this.getSina50EtfOptions(contract);
+
+        console.log(chalk.green(`${contract}: etf`));
+        await this.calculatePremium(x, etfOptionsPromise[contract]);
+
+        contract = '2107';
+        etfOptionsPromise[contract] = this.getSina50EtfOptions(contract);
+
+        console.log(chalk.green(`${contract}: etf`));
+        await this.calculatePremium(x, etfOptionsPromise[contract]);
     }
 }

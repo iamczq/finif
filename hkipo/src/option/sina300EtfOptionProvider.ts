@@ -4,19 +4,37 @@ import { IOption, IOptionPair } from "./IOption";
 import * as iconv from "iconv-lite";
 import { IDataProvider } from './IDataProvider';
 
-export class Sina300EtfOptionProvider implements IDataProvider<Promise<IOptionPair[]>> {
+export class SinaEtfOptionProvider implements IDataProvider<Promise<IOptionPair[]>> {
 
-    private contract: string
+    protected readonly contract: string;
+    protected readonly etf: string;
+    protected readonly regUnderlying: RegExp;
+    protected readonly regCalls: RegExp = /(?<=").*?购.+?月.*?(?=")/gmi;
+    protected readonly regPuts: RegExp = /(?<=").*?沽.+?月.*?(?=")/gmi;
+    protected readonly regCallName: RegExp;
+    protected readonly regPutName: RegExp;
 
-    constructor(contract: string) {
+    constructor(code: string, contract: string) {
+        this.etf = code;
         this.contract = contract;
+        if (code === '510300') {
+            this.regUnderlying = /(?<=hq_str_s_sh510300\=").*?(?=")/gmi;
+            this.regCallName = /300etf购.+?月/i;
+            this.regPutName = /300etf沽.+?月/i;
+        } else if (code === '510050') {
+            this.regUnderlying = /(?<=hq_str_s_sh510050\=").*?(?=")/gmi;
+            this.regCallName = /50etf购.+?月/i;
+            this.regPutName = /50etf沽.+?月/i;
+        } else {
+            throw new Error(`${code} is not a valid etf code.`);
+        }
     }
 
     public async getData(): Promise<IOptionPair[]> {
-        const etf = '510300';
+        const etf = this.etf;
         const contract = this.contract;
 
-        const codeRequest = await fetch(`https://hq.sinajs.cn/list=OP_UP_${etf}${contract},OP_DOWN_${etf}${contract},s_sh510050`, {
+        const codeRequest = await fetch(`https://hq.sinajs.cn/list=OP_UP_${etf}${contract},OP_DOWN_${etf}${contract}`, {
             "headers": {
                 "accept": "*/*",
                 "accept-language": "zh-CN,zh;q=0.9",
@@ -35,17 +53,7 @@ export class Sina300EtfOptionProvider implements IDataProvider<Promise<IOptionPa
         const codeCalls = regCodeCalls.exec(raw) || ['Regex failed', 'Regex failed'];
         const codePuts = regCodePuts.exec(raw) || ['Regex failed', 'Regex failed'];
 
-        const reqCall = await fetch(`https://hq.sinajs.cn/list=${codeCalls[1]},s_sh${etf}`, {
-            "headers": {
-                "accept": "*/*",
-                "accept-language": "zh-CN,zh;q=0.9",
-                "sec-fetch-dest": "script",
-                "sec-fetch-mode": "no-cors",
-                "sec-fetch-site": "cross-site"
-            },
-            "method": "GET",
-        });
-        const reqPut = await fetch(`https://hq.sinajs.cn/list=${codePuts[1]},s_sh${etf}`, {
+        const request = await fetch(`https://hq.sinajs.cn/list=${codeCalls[1]},${codePuts[1]},s_sh${etf}`, {
             "headers": {
                 "accept": "*/*",
                 "accept-language": "zh-CN,zh;q=0.9",
@@ -56,18 +64,15 @@ export class Sina300EtfOptionProvider implements IDataProvider<Promise<IOptionPa
             "method": "GET",
         });
 
-        const response = await Promise.all([reqCall, reqPut]);
+        const rawBuffer = await request.buffer();
+        const rawOptions = iconv.decode(rawBuffer, 'GB18030');
 
-        const rawCallBuffer = await response[0].buffer();
-        const rawCall = iconv.decode(rawCallBuffer, 'GB18030');
-        const regCalls: RegExp = /(?<=").*?购.+?月.*?(?=")/gmi;
-        const calls = rawCall.match(regCalls) || ['Regex failed'];
-
-        const regUnderlying = /(?<=hq_str_s_sh510300\=").*?(?=")/gmi;
-        const underlying = rawCall.match(regUnderlying) || ['Regex failed'];;
+        const underlying = rawOptions.match(this.regUnderlying) || ['Regex failed'];;
+        const calls = rawOptions.match(this.regCalls) || ['Regex failed'];
+        const puts = rawOptions.match(this.regPuts) || ['Regex failed'];
 
         const mappedCalls: IOption[] = calls.map(call => {
-            call = call.replace(/300etf购.+?月/i, `${etf}C${contract}M`);
+            call = call.replace(this.regCallName, `${etf}C${contract}M`);
             const arr = call.split(',');
             return new FinancialOption({
                 'buyVol': parseFloat(arr[0]),
@@ -83,13 +88,8 @@ export class Sina300EtfOptionProvider implements IDataProvider<Promise<IOptionPa
             });
         });
 
-        const rawPutBuffer = await response[1].buffer();
-        const rawPut = iconv.decode(rawPutBuffer, 'GB18030');
-        const regPuts: RegExp = /(?<=").*?沽.+?月.*?(?=")/gmi;
-        const puts = rawPut.match(regPuts) || ['Regex failed'];
-
         const mappedPuts: IOption[] = puts.map(put => {
-            put = put.replace(/300etf沽.+?月/i, `${etf}P${contract}M`);
+            put = put.replace(this.regPutName, `${etf}P${contract}M`);
             const arr = put.split(',');
             return new FinancialOption({
                 'buyVol': parseFloat(arr[0]),
