@@ -15,12 +15,14 @@ prompt({
   //   + chalk.yellow(`4. Combine output.`) + '\r\n'
   //   + chalk.yellow(`5. Play!`) + '\r\n'
   //   + chalk.yellow(`6. Option!`),
-    message: chalk.yellowBright(`Choose options:\r\n`)
+  message: chalk.yellowBright(`Choose options:\r\n`)
     + chalk.yellow(`1. all`) + '\r\n'
     + chalk.yellow(`2. 50`) + '\r\n'
     + chalk.yellow(`3. IC`) + '\r\n'
-    + chalk.yellow(`4. 50 option`) + '\r\n'
-    + chalk.yellow(`6. Option!`),
+    + chalk.yellow(`4. IF`) + '\r\n'
+    + chalk.yellow(`5. IH`) + '\r\n'
+    + chalk.yellow(`6. 50 option`) + '\r\n'
+    + chalk.yellow(`7. Option!`),
 }).then((response: any) => {
   const fetcher = new Fetcher();
   const options = new OptionCalculator();
@@ -32,10 +34,15 @@ prompt({
       options.get50Etf();
       break;
     case '3':
-      options.analyzeIC500();
+      options.analyzeFutures('IC');
       break;
     case '4':
-      options.analyze50etf();
+      options.analyzeFutures('IF');
+      break;
+    case '5':
+      options.analyzeFutures('IH');
+      break;
+    case '6':
       break;
     default:
       console.log('Invalid choice.');

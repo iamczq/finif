@@ -375,8 +375,29 @@ export class OptionCalculator {
         }
     }
 
-    public async analyzeIC500() {
-        const contract = 'sh000905,nf_IC2107,nf_IC2108,nf_IC2109,nf_IC2112';
+    public async analyzeFutures(type: 'IC' | 'IF' | 'IH') {
+        let contract;
+        let regIc;
+        let regIndex;
+        switch (type) {
+            case 'IC':
+                contract = 'sh000905,nf_IC2107,nf_IC2108,nf_IC2109,nf_IC2112';
+                regIc = /(?<=var hq_str_nf_IC.*?\=").*?(?=")/gmi;
+                regIndex = /(?<=hq_str_sh000905\=").*?(?=")/gmi;
+                break;
+            case 'IF':
+                contract = 'sh000300,nf_IF2107,nf_IF2108,nf_IF2109,nf_IF2112';
+                regIc = /(?<=var hq_str_nf_IF.*?\=").*?(?=")/gmi;
+                regIndex = /(?<=hq_str_sh000300\=").*?(?=")/gmi;
+                break;
+            case 'IH':
+                contract = 'sh000016,nf_IH2107,nf_IH2108,nf_IH2109,nf_IH2112';
+                regIc = /(?<=var hq_str_nf_IH.*?\=").*?(?=")/gmi;
+                regIndex = /(?<=hq_str_sh000016\=").*?(?=")/gmi;
+                break;
+            default:
+                throw new Error('Not valid futures');
+        }
         const months = ['2021-07', '2021-08', '2021-09', '2021-12'];
 
         const req = await fetch(`https://hq.sinajs.cn/?list=${contract}`, {
@@ -384,7 +405,6 @@ export class OptionCalculator {
         });
 
         const resp = iconv.decode(await req.buffer(), 'GB18030');
-        const regIc = /(?<=var hq_str_nf_IC.*?\=").*?(?=")/gmi;
         const matchIc = resp.match(regIc) || ['Regex failed'];
 
         const thisMonthPrice = parseFloat(matchIc[0].split(',')[3]);
@@ -392,7 +412,6 @@ export class OptionCalculator {
         const nextQuarterPrice = parseFloat(matchIc[2].split(',')[3]);
         const otherQuarterPrice = parseFloat(matchIc[3].split(',')[3]);
 
-        const regIndex = /(?<=hq_str_sh000905\=").*?(?=")/gmi;
         const matchIndex = resp.match(regIndex) || ['Regex failed'];;
         const index500 = parseFloat(matchIndex[0].split(',')[3]);
 
