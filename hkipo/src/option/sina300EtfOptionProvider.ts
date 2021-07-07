@@ -3,6 +3,8 @@ import { FinancialOption } from "./financialOption";
 import { IOption, IOptionPair } from "./IOption";
 import * as iconv from "iconv-lite";
 import { IDataProvider } from './IDataProvider';
+import fs from 'fs';
+import moment from 'moment';
 
 export class SinaEtfOptionProvider implements IDataProvider<Promise<IOptionPair[]>> {
 
@@ -33,19 +35,37 @@ export class SinaEtfOptionProvider implements IDataProvider<Promise<IOptionPair[
     public async getData(): Promise<IOptionPair[]> {
         const etf = this.etf;
         const contract = this.contract;
+        const path = `data/option/${etf}-${contract}.json`;
+        let raw = '';
 
-        const codeRequest = await fetch(`https://hq.sinajs.cn/list=OP_UP_${etf}${contract},OP_DOWN_${etf}${contract}`, {
-            "headers": {
-                "accept": "*/*",
-                "accept-language": "zh-CN,zh;q=0.9",
-                "sec-fetch-dest": "script",
-                "sec-fetch-mode": "no-cors",
-                "sec-fetch-site": "cross-site"
-            },
-            "method": "GET",
-        });
+        if (fs.existsSync(path)) {
+            const content = fs.readFileSync(path);
+            const data = JSON.parse(content.toString());
+            if (data.dayOfYear === moment().dayOfYear()) {
+                raw = data.text;
+            }
+        }
 
-        const raw = await codeRequest.text();
+        if (raw === '') {
+            const codeRequest = await fetch(`https://hq.sinajs.cn/list=OP_UP_${etf}${contract},OP_DOWN_${etf}${contract}`, {
+                "headers": {
+                    "accept": "*/*",
+                    "accept-language": "zh-CN,zh;q=0.9",
+                    "sec-fetch-dest": "script",
+                    "sec-fetch-mode": "no-cors",
+                    "sec-fetch-site": "cross-site"
+                },
+                "method": "GET",
+            });
+
+            raw = await codeRequest.text();
+
+            const writerStream = fs.createWriteStream(path);
+            writerStream.write(JSON.stringify({
+                'dayOfYear': moment().dayOfYear(),
+                'text': raw
+            }));
+        }
 
         const regCodeCalls: RegExp = /hq_str_OP_UP_.+?"(.+?)";/;
         const regCodePuts: RegExp = /hq_str_OP_DOWN_.+?"(.+?)";/;
