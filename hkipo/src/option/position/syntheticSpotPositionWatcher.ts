@@ -64,8 +64,7 @@ export class SyntheticSpotPositionWatcher {
                         throw new Error("Direction is neither BUY nor SELL.");
                     }
 
-                    // TODO: The multiplier is hard-coded.
-                    const closeReturn = 100 * worstPrice * direction;
+                    const closeReturn = quantity * worstPrice * direction;
 
                     sum = sum + closeReturn;
                     console.log(`${this.directionString(direction)}: ${option.code} close return: ${closeReturn}`);

@@ -495,14 +495,14 @@ export class OptionCalculator {
             trade: [{
                 code: '510300C2112M5000',
                 direction: TradeDirection.Buy,
-                price: 0.3530,
-                quantity: 10 * 10000,
+                price: 0.3530 * 1000,
+                quantity: 10 * 10,
                 fee: 0,
             }, {
                 code: '510300P2112M5000',
                 direction: TradeDirection.Sell,
-                price: 0.1852,
-                quantity: 10 * 10000,
+                price: 0.1852 * 1000,
+                quantity: 10 * 10,
                 fee: 0,
             }],
         }, {
@@ -512,14 +512,14 @@ export class OptionCalculator {
             trade: [{
                 code: '510300P2107M5500',
                 direction: TradeDirection.Buy,
-                price: 0.3335,
-                quantity: 10 * 10000,
+                price: 0.3335 * 1000,
+                quantity: 10 * 10,
                 fee: 0,
             }, {
                 code: '510300C2107M5500',
                 direction: TradeDirection.Sell,
-                price: 0.01585,
-                quantity: 10 * 10000,
+                price: 0.01585 * 1000,
+                quantity: 10 * 10,
                 fee: 0,
             }],
         }];

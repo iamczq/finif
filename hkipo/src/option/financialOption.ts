@@ -1,4 +1,5 @@
 import { IOption } from "./IOption";
+import { UnderlyingType } from "./underlyingType";
 
 export class FinancialOption implements IOption {
     code: string;
@@ -76,5 +77,37 @@ export class FinancialOption implements IOption {
         } else {
             return -10000;
         }
+    }
+
+    underlyingType(): UnderlyingType {
+        const isIndex = this.code.indexOf('io') === 0;
+        const isEtf = this.code.search(/^\d/) === 0;
+        let underlyingType;
+
+        if (isIndex) {
+            underlyingType = UnderlyingType.Index;
+        } else if (isEtf) {
+            underlyingType = UnderlyingType.ETF;
+        } else {
+            throw new Error(`Invlid code ${this.code}`);
+        }
+
+        return underlyingType;
+    }
+
+    /**
+     * 价格转化为指数点的乘数。例如，
+     * etf期权价格是0.1000，此方法应返回1000，即0.1 * 1000 = 100个指数点。
+     * 对于指数期权，返回1，因为指数期权的价格就是指数点。
+     */
+    multiplierFromPriceToIndexPoint(): number {
+        let multiplier;
+        if (this.underlyingType() === UnderlyingType.ETF) {
+            multiplier = 1000;
+        } else {
+            multiplier = 1;
+        }
+
+        return multiplier;
     }
 }
