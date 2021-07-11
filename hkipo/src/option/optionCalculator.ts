@@ -271,6 +271,9 @@ export class OptionCalculator {
 
             console.log('----------------------------------------');
             this.watchSyntheticSpotPosition(x);
+
+            console.log('----------------------------------------');
+            this.watchCalendarSpreadPosition(x);
         });
     }
 
@@ -520,6 +523,70 @@ export class OptionCalculator {
                 direction: TradeDirection.Sell,
                 price: 0.01585 * 1000,
                 quantity: 10 * 10,
+                fee: 0,
+            }],
+        }];
+
+        const watcher: SyntheticSpotPositionWatcher = new SyntheticSpotPositionWatcher(positions);
+        watcher.watch(allOptions);
+    }
+
+    private watchCalendarSpreadPosition(allOptions: IOptionPair[]) {
+        // TODO: For now, use the SyntheticSpotPosition.
+        let positions: SyntheticSpotPosition[] = [{
+            contract: '510300C2109M5000',
+            type: SyntheticSpotPositionTypes.Long,
+            status: PositionStatus.Open,
+            trade: [{
+                code: '510300C2109M5000',
+                direction: TradeDirection.Buy,
+                price: 0.2582 * 1000,
+                quantity: 1 * 10,
+                fee: 0,
+            }],
+        }, {
+            contract: '510300C2105M5000',
+            type: SyntheticSpotPositionTypes.Short,
+            status: PositionStatus.Close,
+            trade: [{
+                code: '510300C2105M5000',
+                direction: TradeDirection.Sell,
+                price: 0.1172 * 1000,
+                quantity: 1 * 10,
+                fee: 0,
+            }, {
+                code: '510300C2105M5000',
+                direction: TradeDirection.Buy,
+                price: 0.3218 * 1000,
+                quantity: 1 * 10,
+                fee: 0,
+            }],
+        }, {
+            contract: '510300C2106M5000',
+            type: SyntheticSpotPositionTypes.Short,
+            status: PositionStatus.Close,
+            trade: [{
+                code: '510300C2106M5000',
+                direction: TradeDirection.Sell,
+                price: 0.3518 * 1000,
+                quantity: 1 * 10,
+                fee: 0,
+            }, {
+                code: '510300C2106M5000',
+                direction: TradeDirection.Buy,
+                price: 0.1447 * 1000,
+                quantity: 1 * 10,
+                fee: 0,
+            }],
+        }, {
+            contract: '510300C2107M5000',
+            type: SyntheticSpotPositionTypes.Short,
+            status: PositionStatus.Open,
+            trade: [{
+                code: '510300C2107M5000',
+                direction: TradeDirection.Sell,
+                price: 0.2113 * 1000,
+                quantity: 1 * 10,
                 fee: 0,
             }],
         }];
