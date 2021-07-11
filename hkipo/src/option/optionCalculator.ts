@@ -6,6 +6,10 @@ import { FinancialOption } from './financialOption';
 import { SinaEtfOptionProvider } from './sina300EtfOptionProvider';
 import { Sina300IndexOptionProvider } from './sina300IndexOptionProvider';
 import moment from 'moment';
+import { SyntheticSpotPositionWatcher } from './position/syntheticSpotPositionWatcher';
+import { SyntheticSpotPosition, SyntheticSpotPositionTypes } from './position/syntheticSpotPosition';
+import { PositionStatus } from './position/positionStatus';
+import { TradeDirection } from '../trade/tradeDirection';
 
 export class OptionCalculator {
     constructor() {
@@ -17,19 +21,19 @@ export class OptionCalculator {
         const indexOptionsPromise: { [contract: string]: Promise<IOptionPair[]> } = {};
         let contract = '';
 
-        contract = '2206';
-        futuresPromise[contract] = this.getFutures(contract);
-        indexOptionsPromise[contract] = this.getSina300IndexOptions(contract);
+        // contract = '2206';
+        // futuresPromise[contract] = this.getFutures(contract);
+        // indexOptionsPromise[contract] = this.getSina300IndexOptions(contract);
 
-        console.log(chalk.green(`${contract}: index`));
-        await this.calculatePremium(futuresPromise[contract], indexOptionsPromise[contract]);
+        // console.log(chalk.green(`${contract}: index`));
+        // await this.calculatePremium(futuresPromise[contract], indexOptionsPromise[contract]);
 
-        contract = '2203';
-        futuresPromise[contract] = this.getFutures(contract);
-        indexOptionsPromise[contract] = this.getSina300IndexOptions(contract);
+        // contract = '2203';
+        // futuresPromise[contract] = this.getFutures(contract);
+        // indexOptionsPromise[contract] = this.getSina300IndexOptions(contract);
 
-        console.log(chalk.green(`${contract}: index`));
-        await this.calculatePremium(futuresPromise[contract], indexOptionsPromise[contract]);
+        // console.log(chalk.green(`${contract}: index`));
+        // await this.calculatePremium(futuresPromise[contract], indexOptionsPromise[contract]);
 
         contract = '2112';
         futuresPromise[contract] = this.getFutures(contract);
@@ -264,6 +268,9 @@ export class OptionCalculator {
             console.log(`Current price open: total ${(nearShortCurrentPrice + farLongCurrentPrice).toFixed(2)}, near ${nearShortCurrentPrice.toFixed(2)}, far ${farLongCurrentPrice.toFixed(2)}`);
             console.log(`Opposite price close: total ${(nearLongOppositePrice + farShortOppositePrice).toFixed(2)}, near ${nearLongOppositePrice.toFixed(2)}, far ${farShortOppositePrice.toFixed(2)}`);
             console.log(`Underlying, near: ${nearUnderlying}, far: ${farUnderlying}, differences: ${(nearUnderlying - farUnderlying).toFixed(2)}`);
+
+            console.log('----------------------------------------');
+            this.watchSyntheticSpotPosition(x);
         });
     }
 
@@ -478,5 +485,46 @@ export class OptionCalculator {
 
         console.log(chalk.green(`${contract}: etf`));
         await this.calculatePremium(x, etfOptionsPromise[contract]);
+    }
+
+    private watchSyntheticSpotPosition(allOptions: IOptionPair[]) {
+        let positions: SyntheticSpotPosition[] = [{
+            contract: '510300C2112M5000',
+            type: SyntheticSpotPositionTypes.Long,
+            status: PositionStatus.Open,
+            trade: [{
+                code: '510300C2112M5000',
+                direction: TradeDirection.Buy,
+                price: 0.3530,
+                quantity: 10 * 10000,
+                fee: 0,
+            }, {
+                code: '510300P2112M5000',
+                direction: TradeDirection.Sell,
+                price: 0.1852,
+                quantity: 10 * 10000,
+                fee: 0,
+            }],
+        }, {
+            contract: '510300C2107M5500',
+            type: SyntheticSpotPositionTypes.Short,
+            status: PositionStatus.Open,
+            trade: [{
+                code: '510300P2107M5500',
+                direction: TradeDirection.Buy,
+                price: 0.3335,
+                quantity: 10 * 10000,
+                fee: 0,
+            }, {
+                code: '510300C2107M5500',
+                direction: TradeDirection.Sell,
+                price: 0.01585,
+                quantity: 10 * 10000,
+                fee: 0,
+            }],
+        }];
+
+        const watcher: SyntheticSpotPositionWatcher = new SyntheticSpotPositionWatcher(positions);
+        watcher.watch(allOptions);
     }
 }
