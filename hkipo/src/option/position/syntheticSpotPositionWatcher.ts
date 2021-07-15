@@ -25,7 +25,7 @@ export class SyntheticSpotPositionWatcher {
         const shortProfit = shortAt + closeShort;
         const shortUnderlying = this.getShortUnderlying(allOptions);
         const closeShortPremium = closeShort + shortUnderlying;
-        console.log(`Short at ${shortAt}, close should pay ${closeShort}, now underlying is ${shortUnderlying}.
+        console.log(`Short ${this.getCloseShortContract()} at ${shortAt}, close should pay ${closeShort}, now underlying is ${shortUnderlying}.
         PnL: profit ${shortProfit}. premium ${closeShortPremium}.`);
 
         const longAt = this.getLongCost();
@@ -33,7 +33,7 @@ export class SyntheticSpotPositionWatcher {
         const longProfit = longAt + closeLong;
         const longUnderlying = this.getLongUnderlying(allOptions);
         const closeLongPremium = closeLong - longUnderlying;
-        console.log(`Long at ${longAt}, close will get ${closeLong}, now underlying is ${longUnderlying}.
+        console.log(`Long ${this.getCloseLongContract()} at ${longAt}, close will get ${closeLong}, now underlying is ${longUnderlying}.
         PnL: profit ${longProfit}. premium ${closeLongPremium}.`);
     }
 
@@ -59,6 +59,12 @@ export class SyntheticSpotPositionWatcher {
         const closeShortReturn = - optionPair.call.sellPrice + optionPair.put.buyPrice - optionPair.call.executionPrice;
 
         return closeShortReturn;
+    }
+
+    private getCloseShortContract(): string {
+        const shortPosition = this.position.filter(pos => pos.isShort() && pos.isActive());
+        // TODO: What if length === 0?
+        return shortPosition[0].contract;
     }
 
     private getShortUnderlying(allOptions: IOptionPair[]): number {
@@ -94,6 +100,12 @@ export class SyntheticSpotPositionWatcher {
         const closeLongReturn = optionPair.call.buyPrice - optionPair.put.sellPrice + optionPair.call.executionPrice;
 
         return closeLongReturn;
+    }
+
+    private getCloseLongContract(): string {
+        const longPosition = this.position.filter(pos => pos.isLong() && pos.isActive());
+        // TODO: What if length === 0?
+        return longPosition[0].contract;
     }
 
     private getLongUnderlying(allOptions: IOptionPair[]): number {
