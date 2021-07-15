@@ -1,4 +1,4 @@
 export enum PositionStatus {
-    Open,
+    Active,
     Close,
 };

@@ -274,6 +274,10 @@ export class OptionCalculator {
 
             console.log('----------------------------------------');
             this.watchCalendarSpreadPosition(x);
+
+            console.log('----------------------------------------');
+            this.watchAnotherSyntheticSpotPosition(x);
+
         });
     }
 
@@ -491,10 +495,12 @@ export class OptionCalculator {
     }
 
     private watchSyntheticSpotPosition(allOptions: IOptionPair[]) {
-        let positions: SyntheticSpotPosition[] = [{
+        let positions: SyntheticSpotPosition[] = [];
+        
+        positions.push(new SyntheticSpotPosition({
             contract: '510300C2112M5000',
             type: SyntheticSpotPositionTypes.Long,
-            status: PositionStatus.Open,
+            status: PositionStatus.Active,
             trade: [{
                 code: '510300C2112M5000',
                 direction: TradeDirection.Buy,
@@ -508,10 +514,12 @@ export class OptionCalculator {
                 quantity: 10 * 10,
                 fee: 0,
             }],
-        }, {
+        }));
+
+        positions.push(new SyntheticSpotPosition({
             contract: '510300C2107M5500',
             type: SyntheticSpotPositionTypes.Short,
-            status: PositionStatus.Open,
+            status: PositionStatus.Active,
             trade: [{
                 code: '510300P2107M5500',
                 direction: TradeDirection.Buy,
@@ -525,7 +533,7 @@ export class OptionCalculator {
                 quantity: 10 * 10,
                 fee: 0,
             }],
-        }];
+        }));
 
         const watcher: SyntheticSpotPositionWatcher = new SyntheticSpotPositionWatcher(positions);
         watcher.watch(allOptions);
@@ -533,10 +541,12 @@ export class OptionCalculator {
 
     private watchCalendarSpreadPosition(allOptions: IOptionPair[]) {
         // TODO: For now, use the SyntheticSpotPosition.
-        let positions: SyntheticSpotPosition[] = [{
+        let positions: SyntheticSpotPosition[] = [];
+
+        positions.push(new SyntheticSpotPosition({
             contract: '510300C2109M5000',
             type: SyntheticSpotPositionTypes.Long,
-            status: PositionStatus.Open,
+            status: PositionStatus.Active,
             trade: [{
                 code: '510300C2109M5000',
                 direction: TradeDirection.Buy,
@@ -544,7 +554,9 @@ export class OptionCalculator {
                 quantity: 1 * 10,
                 fee: 0,
             }],
-        }, {
+        }));
+
+        positions.push(new SyntheticSpotPosition({
             contract: '510300C2105M5000',
             type: SyntheticSpotPositionTypes.Short,
             status: PositionStatus.Close,
@@ -561,7 +573,9 @@ export class OptionCalculator {
                 quantity: 1 * 10,
                 fee: 0,
             }],
-        }, {
+        }));
+
+        positions.push(new SyntheticSpotPosition({
             contract: '510300C2106M5000',
             type: SyntheticSpotPositionTypes.Short,
             status: PositionStatus.Close,
@@ -578,10 +592,12 @@ export class OptionCalculator {
                 quantity: 1 * 10,
                 fee: 0,
             }],
-        }, {
+        }));
+
+        positions.push(new SyntheticSpotPosition({
             contract: '510300C2107M5000',
             type: SyntheticSpotPositionTypes.Short,
-            status: PositionStatus.Open,
+            status: PositionStatus.Active,
             trade: [{
                 code: '510300C2107M5000',
                 direction: TradeDirection.Sell,
@@ -589,7 +605,52 @@ export class OptionCalculator {
                 quantity: 1 * 10,
                 fee: 0,
             }],
-        }];
+        }));
+
+        const watcher: SyntheticSpotPositionWatcher = new SyntheticSpotPositionWatcher(positions);
+        watcher.watch(allOptions);
+    }
+
+    private watchAnotherSyntheticSpotPosition(allOptions: IOptionPair[]) {
+        let positions: SyntheticSpotPosition[] = [];
+
+        positions.push(new SyntheticSpotPosition({
+            contract: 'io2107C4900',
+            type: SyntheticSpotPositionTypes.Long,
+            status: PositionStatus.Active,
+            trade: [{
+                code: 'io2107C4900',
+                direction: TradeDirection.Buy,
+                price: 151.9,
+                quantity: 10 * 10,
+                fee: 0,
+            }, {
+                code: 'io2107P4900',
+                direction: TradeDirection.Sell,
+                price: 8.2,
+                quantity: 10 * 10,
+                fee: 0,
+            }],
+        }));
+
+        positions.push(new SyntheticSpotPosition({
+            contract: '510300C2107M5000',
+            type: SyntheticSpotPositionTypes.Short,
+            status: PositionStatus.Active,
+            trade: [{
+                code: '510300P2107M5000',
+                direction: TradeDirection.Buy,
+                price: 0.0351 * 1000,
+                quantity: 10 * 10,
+                fee: 0,
+            }, {
+                code: '510300C2107M5000',
+                direction: TradeDirection.Sell,
+                price: 0.14315 * 1000,
+                quantity: 10 * 10,
+                fee: 0,
+            }],
+        }));
 
         const watcher: SyntheticSpotPositionWatcher = new SyntheticSpotPositionWatcher(positions);
         watcher.watch(allOptions);

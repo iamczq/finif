@@ -23,4 +23,17 @@ export class SyntheticSpotPosition {
         this.status = initializer.status;
         this.trade = initializer.trade;
     }
+
+    isLong() {
+        return this.type === SyntheticSpotPositionTypes.Long;
+    }
+
+    isShort() {
+        return this.type === SyntheticSpotPositionTypes.Short;
+    }
+
+    isActive() {
+        return this.status === PositionStatus.Active;
+    }
+
 }
