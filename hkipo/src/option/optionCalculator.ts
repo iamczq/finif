@@ -1,8 +1,7 @@
 import fetch from 'node-fetch';
-import { IOption, IOptionPair } from './IOption';
+import {IOptionPair } from './IOption';
 import * as iconv from "iconv-lite";
 import chalk from "chalk";
-import { FinancialOption } from './financialOption';
 import { SinaEtfOptionProvider } from './sina300EtfOptionProvider';
 import { Sina300IndexOptionProvider } from './sina300IndexOptionProvider';
 import moment from 'moment';
@@ -12,10 +11,8 @@ import { PositionStatus } from './position/positionStatus';
 import { TradeDirection } from '../trade/tradeDirection';
 
 export class OptionCalculator {
-    constructor() {
-    }
 
-    public async main() {
+    public async main(): Promise<void> {
         const futuresPromise: { [contract: string]: Promise<string> } = {};
         const etfOptionsPromise: { [contract: string]: Promise<IOptionPair[]> } = {};
         const indexOptionsPromise: { [contract: string]: Promise<IOptionPair[]> } = {};
@@ -82,7 +79,7 @@ export class OptionCalculator {
         // await this.analyzeIC500();
     }
 
-    public calculatePremium(futuresPromise: Promise<string>, optionsPromise: Promise<IOptionPair[]>) {
+    public calculatePremium(futuresPromise: Promise<string>, optionsPromise: Promise<IOptionPair[]>): Promise<void> {
         return Promise.all([futuresPromise, optionsPromise])
             .then(respone => {
                 // console.log(chalk.green(`${contract}: ${source}`));
@@ -224,14 +221,14 @@ export class OptionCalculator {
             console.log(`Time value delta SEP - JULY: ${timeValueFar - timeValueFront}. (It was 58 on JUN 20th)`);
 
             console.log('----------------------------------------');
-            let nearShortOppositePrice: number = 0;
-            let farLongOppositePrice: number = 0;
-            let nearShortCurrentPrice: number = 0;
-            let farLongCurrentPrice: number = 0;
-            let nearLongOppositePrice: number = 0;
-            let farShortOppositePrice: number = 0;
-            let nearUnderlying: number = 0;
-            let farUnderlying: number = 0;
+            let nearShortOppositePrice = 0;
+            let farLongOppositePrice = 0;
+            let nearShortCurrentPrice = 0;
+            let farLongCurrentPrice = 0;
+            let nearLongOppositePrice = 0;
+            let farShortOppositePrice = 0;
+            let nearUnderlying = 0;
+            let farUnderlying = 0;
             x.forEach(resp => {
                 if (resp.code === '510300C2108M5500') {
                     console.log(`${this.directionString('S')}: ${resp.call.code} time value: ${resp.call.timeValue()}. Buy Price: ${resp.call.buyPrice}. Sell Price: ${resp.call.sellPrice}`);
@@ -274,9 +271,6 @@ export class OptionCalculator {
 
             console.log('----------------------------------------');
             this.watchCalendarSpreadPosition(x);
-
-            console.log('----------------------------------------');
-            this.watchAnotherSyntheticSpotPosition(x);
 
         });
     }
@@ -358,7 +352,7 @@ export class OptionCalculator {
         });
     }
 
-    public async get50Etf() {
+    public async get50Etf(): Promise<void> {
 
         const req = await fetch(`https://hq.sinajs.cn/list=s_sh510050`, {
             "headers": {
@@ -373,8 +367,8 @@ export class OptionCalculator {
 
         const rawCallBuffer = await req.buffer();
         const rawCall = iconv.decode(rawCallBuffer, 'GB18030');
-        const regUnderlying = /(?<=hq_str_s_sh510050\=").*?(?=")/gmi;
-        const underlying = rawCall.match(regUnderlying) || ['Regex failed'];;
+        const regUnderlying = /(?<=hq_str_s_sh510050=").*?(?=")/gmi;
+        const underlying = rawCall.match(regUnderlying) || ['Regex failed'];
 
         console.log(chalk.red(`${underlying}`));
     }
@@ -389,25 +383,25 @@ export class OptionCalculator {
         }
     }
 
-    public async analyzeFutures(type: 'IC' | 'IF' | 'IH') {
+    public async analyzeFutures(type: 'IC' | 'IF' | 'IH'): Promise<void> {
         let contract;
         let regIc;
         let regIndex;
         switch (type) {
             case 'IC':
                 contract = 'sh000905,nf_IC2107,nf_IC2108,nf_IC2109,nf_IC2112';
-                regIc = /(?<=var hq_str_nf_IC.*?\=").*?(?=")/gmi;
-                regIndex = /(?<=hq_str_sh000905\=").*?(?=")/gmi;
+                regIc = /(?<=var hq_str_nf_IC.*?=").*?(?=")/gmi;
+                regIndex = /(?<=hq_str_sh000905=").*?(?=")/gmi;
                 break;
             case 'IF':
                 contract = 'sh000300,nf_IF2107,nf_IF2108,nf_IF2109,nf_IF2112';
-                regIc = /(?<=var hq_str_nf_IF.*?\=").*?(?=")/gmi;
-                regIndex = /(?<=hq_str_sh000300\=").*?(?=")/gmi;
+                regIc = /(?<=var hq_str_nf_IF.*?=").*?(?=")/gmi;
+                regIndex = /(?<=hq_str_sh000300=").*?(?=")/gmi;
                 break;
             case 'IH':
                 contract = 'sh000016,nf_IH2107,nf_IH2108,nf_IH2109,nf_IH2112';
-                regIc = /(?<=var hq_str_nf_IH.*?\=").*?(?=")/gmi;
-                regIndex = /(?<=hq_str_sh000016\=").*?(?=")/gmi;
+                regIc = /(?<=var hq_str_nf_IH.*?=").*?(?=")/gmi;
+                regIndex = /(?<=hq_str_sh000016=").*?(?=")/gmi;
                 break;
             default:
                 throw new Error('Not valid futures');
@@ -426,7 +420,7 @@ export class OptionCalculator {
         const nextQuarterPrice = parseFloat(matchIc[2].split(',')[3]);
         const otherQuarterPrice = parseFloat(matchIc[3].split(',')[3]);
 
-        const matchIndex = resp.match(regIndex) || ['Regex failed'];;
+        const matchIndex = resp.match(regIndex) || ['Regex failed'];
         const index500 = parseFloat(matchIndex[0].split(',')[3]);
 
         const now = moment();
@@ -460,7 +454,7 @@ export class OptionCalculator {
         return [];
     }
 
-    public async analyze50etf() {
+    public async analyze50etf(): Promise<void> {
         const futuresPromise: { [contract: string]: Promise<string> } = {};
         const etfOptionsPromise: { [contract: string]: Promise<IOptionPair[]> } = {};
         const indexOptionsPromise: { [contract: string]: Promise<IOptionPair[]> } = {};
@@ -495,7 +489,7 @@ export class OptionCalculator {
     }
 
     private watchSyntheticSpotPosition(allOptions: IOptionPair[]) {
-        let positions: SyntheticSpotPosition[] = [];
+        const positions: SyntheticSpotPosition[] = [];
         
         positions.push(new SyntheticSpotPosition({
             contract: '510300C2112M5000',
@@ -541,7 +535,7 @@ export class OptionCalculator {
 
     private watchCalendarSpreadPosition(allOptions: IOptionPair[]) {
         // TODO: For now, use the SyntheticSpotPosition.
-        let positions: SyntheticSpotPosition[] = [];
+        const positions: SyntheticSpotPosition[] = [];
 
         positions.push(new SyntheticSpotPosition({
             contract: '510300C2109M5000',
@@ -611,48 +605,4 @@ export class OptionCalculator {
         watcher.watch(allOptions);
     }
 
-    private watchAnotherSyntheticSpotPosition(allOptions: IOptionPair[]) {
-        let positions: SyntheticSpotPosition[] = [];
-
-        positions.push(new SyntheticSpotPosition({
-            contract: 'io2107C4900',
-            type: SyntheticSpotPositionTypes.Long,
-            status: PositionStatus.Active,
-            trade: [{
-                code: 'io2107C4900',
-                direction: TradeDirection.Buy,
-                price: 151.9,
-                quantity: 10 * 10,
-                fee: 0,
-            }, {
-                code: 'io2107P4900',
-                direction: TradeDirection.Sell,
-                price: 8.2,
-                quantity: 10 * 10,
-                fee: 0,
-            }],
-        }));
-
-        positions.push(new SyntheticSpotPosition({
-            contract: '510300C2107M5000',
-            type: SyntheticSpotPositionTypes.Short,
-            status: PositionStatus.Active,
-            trade: [{
-                code: '510300P2107M5000',
-                direction: TradeDirection.Buy,
-                price: 0.0351 * 1000,
-                quantity: 10 * 10,
-                fee: 0,
-            }, {
-                code: '510300C2107M5000',
-                direction: TradeDirection.Sell,
-                price: 0.14315 * 1000,
-                quantity: 10 * 10,
-                fee: 0,
-            }],
-        }));
-
-        const watcher: SyntheticSpotPositionWatcher = new SyntheticSpotPositionWatcher(positions);
-        watcher.watch(allOptions);
-    }
 }

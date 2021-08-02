@@ -47,12 +47,12 @@ export class Sina300IndexOptionProvider implements IDataProvider<Promise<IOption
         // Underlying
         const indexRespBuffer = await indexReq.buffer();
         const rawIndex = iconv.decode(indexRespBuffer, 'GB18030');
-        const regUnderlying = /(?<=hq_str_sh000300\=").*?(?=")/gmi;
+        const regUnderlying = /(?<=hq_str_sh000300=").*?(?=")/gmi;
         const underlying = rawIndex.match(regUnderlying) || ['Regex failed'];
 
         const mappedCalls: IOption[] = calls.map(call => {
             if (call.length != 9) {
-                console.log('Somthing must be changed!!!');
+                console.log('Something must be changed!!!');
             }
 
             return new FinancialOption({
@@ -71,7 +71,7 @@ export class Sina300IndexOptionProvider implements IDataProvider<Promise<IOption
 
         const mappedPuts: IOption[] = puts.map(put => {
             if (put.length != 8) {
-                console.log('Somthing must be changed!!!');
+                console.log('Something must be changed!!!');
             }
 
             return new FinancialOption({
@@ -94,7 +94,7 @@ export class Sina300IndexOptionProvider implements IDataProvider<Promise<IOption
             let put = mappedPuts.find(put => put.code.toLowerCase() === putCode.toLowerCase());
 
             if (!put) {
-                console.log('Somthing must be wrong!!!');
+                console.log('Something must be wrong!!!');
                 put = {} as IOption;
             }
 

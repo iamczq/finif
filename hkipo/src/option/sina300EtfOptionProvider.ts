@@ -20,11 +20,11 @@ export class SinaEtfOptionProvider implements IDataProvider<Promise<IOptionPair[
         this.etf = code;
         this.contract = contract;
         if (code === '510300') {
-            this.regUnderlying = /(?<=hq_str_s_sh510300\=").*?(?=")/gmi;
+            this.regUnderlying = /(?<=hq_str_s_sh510300=").*?(?=")/gmi;
             this.regCallName = /300etf购.+?月/i;
             this.regPutName = /300etf沽.+?月/i;
         } else if (code === '510050') {
-            this.regUnderlying = /(?<=hq_str_s_sh510050\=").*?(?=")/gmi;
+            this.regUnderlying = /(?<=hq_str_s_sh510050=").*?(?=")/gmi;
             this.regCallName = /50etf购.+?月/i;
             this.regPutName = /50etf沽.+?月/i;
         } else {
@@ -67,8 +67,8 @@ export class SinaEtfOptionProvider implements IDataProvider<Promise<IOptionPair[
             }));
         }
 
-        const regCodeCalls: RegExp = /hq_str_OP_UP_.+?"(.+?)";/;
-        const regCodePuts: RegExp = /hq_str_OP_DOWN_.+?"(.+?)";/;
+        const regCodeCalls = /hq_str_OP_UP_.+?"(.+?)";/;
+        const regCodePuts = /hq_str_OP_DOWN_.+?"(.+?)";/;
 
         const codeCalls = regCodeCalls.exec(raw) || ['Regex failed', 'Regex failed'];
         const codePuts = regCodePuts.exec(raw) || ['Regex failed', 'Regex failed'];
@@ -87,7 +87,7 @@ export class SinaEtfOptionProvider implements IDataProvider<Promise<IOptionPair[
         const rawBuffer = await request.buffer();
         const rawOptions = iconv.decode(rawBuffer, 'GB18030');
 
-        const underlying = rawOptions.match(this.regUnderlying) || ['Regex failed'];;
+        const underlying = rawOptions.match(this.regUnderlying) || ['Regex failed'];
         const calls = rawOptions.match(this.regCalls) || ['Regex failed'];
         const puts = rawOptions.match(this.regPuts) || ['Regex failed'];
 
@@ -131,7 +131,7 @@ export class SinaEtfOptionProvider implements IDataProvider<Promise<IOptionPair[
             let put = mappedPuts.find(put => put.code.toLowerCase() === putCode.toLowerCase());
 
             if (!put) {
-                console.log('Somthing must be wrong!!!');
+                console.log('Something must be wrong!!!');
                 put = {} as IOption;
             }
 

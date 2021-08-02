@@ -5,9 +5,6 @@ import { setInterval } from 'timers';
 import { Parser } from 'json2csv';
 
 export class Fetcher {
-    constructor() {
-    }
-
     /**
      * fetchAIpo
      */

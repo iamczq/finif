@@ -4,7 +4,7 @@ import { PositionStatus } from "./positionStatus";
 export enum SyntheticSpotPositionTypes {
     Long = 'LONG',
     Short = 'SHORT',
-};
+}
 
 export class SyntheticSpotPosition {
     contract: string; // '510300C2112M5000',
@@ -24,15 +24,15 @@ export class SyntheticSpotPosition {
         this.trade = initializer.trade;
     }
 
-    isLong() {
+    isLong(): boolean {
         return this.type === SyntheticSpotPositionTypes.Long;
     }
 
-    isShort() {
+    isShort(): boolean {
         return this.type === SyntheticSpotPositionTypes.Short;
     }
 
-    isActive() {
+    isActive(): boolean {
         return this.status === PositionStatus.Active;
     }
 
