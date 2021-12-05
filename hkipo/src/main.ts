@@ -21,8 +21,7 @@ prompt({
     + chalk.yellow(`3. IC`) + '\r\n'
     + chalk.yellow(`4. IF`) + '\r\n'
     + chalk.yellow(`5. IH`) + '\r\n'
-    + chalk.yellow(`6. 50 option`) + '\r\n'
-    + chalk.yellow(`7. Option!`),
+    + chalk.yellow(`6. ...`) + '\r\n'
 }).then((response: any) => {
   const fetcher = new Fetcher();
   const options = new OptionCalculator();
@@ -43,6 +42,7 @@ prompt({
       options.analyzeFutures('IH');
       break;
     case '6':
+      options.getRemainDays();
       break;
     default:
       console.log('Invalid choice.');

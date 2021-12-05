@@ -1,8 +1,11 @@
+import moment from "moment";
 import { IOption } from "./IOption";
 import { UnderlyingType } from "./underlyingType";
 
 export class FinancialOption implements IOption {
     code: string;
+    month: string;
+    type: 'C' | 'P';
     executionPrice: number;
     price: number;
     buyVol: number;
@@ -22,6 +25,8 @@ export class FinancialOption implements IOption {
 
     constructor(initializer: {
         code: string,
+        month: string,
+        type: 'C' | 'P',
         executionPrice: number,
         price: number,
         buyVol: number,
@@ -31,15 +36,10 @@ export class FinancialOption implements IOption {
         position: number,
         changePercent: number,
         underlyingPrice: number,
-        // timeValue?: number,
-        // intrinsicValue?: number,
-        // delta?: number,
-        // gamma?: number,
-        // theta?: number,
-        // vega?: number,
-        // iv?: number,
     }) {
-        this.code = initializer.code; initializer.code;
+        this.code = initializer.code;
+        this.month = initializer.month;
+        this.type = initializer.type;
         this.executionPrice = initializer.executionPrice;
         this.price = initializer.price;
         this.buyVol = initializer.buyVol;
@@ -58,6 +58,11 @@ export class FinancialOption implements IOption {
         // this.iv = initializer.iv;
     }
 
+    // TODO
+    delta(): number {
+        return 0;
+    };
+
     timeValue(): number {
         // console.log(this.code, this.executionPrice, this.underlyingPrice, this.price);
 
@@ -75,8 +80,27 @@ export class FinancialOption implements IOption {
         } else if (callPut === 'P') {
             return Math.min(this.underlyingPrice - this.executionPrice, 0) + this.price;
         } else {
-            return -10000;
+            return NaN;
         }
+    }
+
+    // TODO: Not implemented?
+    public remainDays(): number {
+        const month = '20' + this.month.substring(0,2) + '-' + this.month.substring(2,4);
+        let days;
+        // If the first day of this month > Wednesday.
+        // moment(month)                  > moment(month).day(3)
+        if (moment(month).day(3) < moment(month)) {
+            days = 28 + 3;
+        } else {
+            days = 21 + 3;
+        }
+        
+        const futureExpireDay = moment(month).day(days);
+        const today = moment(moment().format('YYYY-MM-DD'));
+        const remainDays = futureExpireDay.diff(today, 'days');
+
+        return remainDays;
     }
 
     underlyingType(): UnderlyingType {

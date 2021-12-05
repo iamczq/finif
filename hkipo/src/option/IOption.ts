@@ -1,6 +1,8 @@
 export interface IOption {
     // 基本信息
     code: string,
+    month: string,
+    type: 'C' | 'P';
     executionPrice: number,
     price: number,
     buyVol: number,
@@ -10,10 +12,11 @@ export interface IOption {
     position: number,
     changePercent: number,
     underlyingPrice: number,
+    remainDays: () => number,
     // 风险值
     timeValue: () => number,
     // intrinsicValue: number,
-    // delta: number,
+    delta: () => number,
     // gamma: number,
     // theta: number,
     // vega: number,

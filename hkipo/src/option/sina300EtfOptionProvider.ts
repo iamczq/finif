@@ -104,6 +104,8 @@ export class SinaEtfOptionProvider implements IDataProvider<Promise<IOptionPair[
                 'changePercent': parseFloat(arr[6]),
                 'executionPrice': parseFloat(arr[7]) * 1000,
                 'code': arr[37] as string,
+                'month': (arr[37] as string).substring(7, 11),
+                type: 'C',
                 underlyingPrice: parseFloat(underlying[0].split(',')[1]) * 1000,
             });
         });
@@ -121,6 +123,8 @@ export class SinaEtfOptionProvider implements IDataProvider<Promise<IOptionPair[
                 'changePercent': parseFloat(arr[6]),
                 'executionPrice': parseFloat(arr[7]) * 1000,
                 'code': arr[37] as string,
+                'month': (arr[37] as string).substring(7, 11),
+                type: 'P',
                 underlyingPrice: parseFloat(underlying[0].split(',')[1]) * 1000,
             });
         });
@@ -144,7 +148,7 @@ export class SinaEtfOptionProvider implements IDataProvider<Promise<IOptionPair[
             // console.log(pair);
             return pair;
         }).filter(pair => pair.call !== undefined && pair.put !== undefined);
-        
+
         return callPutPairs;
     }
 }

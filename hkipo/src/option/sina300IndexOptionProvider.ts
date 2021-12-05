@@ -65,6 +65,8 @@ export class Sina300IndexOptionProvider implements IDataProvider<Promise<IOption
                 'changePercent': parseFloat(call[6]),
                 'executionPrice': parseFloat(call[7]),
                 'code': call[8] as string,
+                'month': (call[8] as string).substring(2, 6),
+                'type': 'C',
                 underlyingPrice: parseFloat(underlying[0].split(',')[3]),
             });
         });
@@ -83,6 +85,8 @@ export class Sina300IndexOptionProvider implements IDataProvider<Promise<IOption
                 'position': parseFloat(put[5]),
                 'changePercent': parseFloat(put[6]),
                 'code': put[7] as string,
+                'month': (put[7] as string).substring(2, 6),
+                'type': 'P',
                 executionPrice: NaN,
                 underlyingPrice: parseFloat(underlying[0].split(',')[3]),
             });

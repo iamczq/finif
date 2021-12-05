@@ -175,12 +175,15 @@ export class OptionCalculator {
 
             x.forEach(resp => {
                 if (resp.code === 'io2107C5200') {
+                    console.log('aaaaaaaaaaaaaaaaaa', resp.call.remainDays());
+                    
                     console.log(`${this.directionString('B')}: ${resp.code} time value: ${resp.call.timeValue()} price: ${resp.call.price}`);
                 }
             });
 
             x.forEach(resp => {
                 if (resp.code === '510300C2107M5250') {
+                    console.log('bbbbbbbbbbbbbbbbbbb', resp.call.remainDays());
                     console.log(`${this.directionString('S')}: ${resp.code} time value: ${resp.call.timeValue()} price: ${resp.call.price}`);
                 }
             });
@@ -251,7 +254,7 @@ export class OptionCalculator {
             });
 
             x.forEach(resp => {
-                if (resp.code === 'io2112C4900') {
+                if (resp.code === 'io2107C5000') {
                     console.log(`${this.directionString('B')}: ${resp.call.code} time value: ${resp.call.timeValue()}. Buy Price: ${resp.call.buyPrice}. Sell Price: ${resp.call.sellPrice}`);
                     console.log(`${this.directionString('S')}: ${resp.put.code} time value: ${resp.put.timeValue()}. Buy Price: ${resp.put.buyPrice}. Sell Price: ${resp.put.sellPrice}`);
                     farLongOppositePrice = - resp.call.sellPrice + resp.put.buyPrice - resp.call.executionPrice + resp.call.underlyingPrice;
@@ -272,6 +275,48 @@ export class OptionCalculator {
             console.log('----------------------------------------');
             this.watchCalendarSpreadPosition(x);
 
+            console.log('---------------------------------------');
+            x.forEach(resp => {
+                if (resp.code === 'io2107C5000') {
+                    const buyCall = - resp.call.sellPrice;
+                    const sellPut = resp.put.buyPrice;
+                    const open = buyCall + sellPut;
+                    const  close = -36.4 + 78.2;
+                    console.log(`---${resp.code}---`);
+                    console.log('Buy call', buyCall, 'Sell put', sellPut);
+                    console.log('开仓', open);
+                    console.log('平仓', close);
+                    console.log('total', open + close);
+                }
+            });
+
+            x.forEach(resp => {
+                if (resp.code === 'io2107C5100') {
+                    const buyCall = - resp.call.sellPrice;
+                    const sellPut = resp.put.buyPrice;
+                    const open = buyCall + sellPut;
+                    const  close = -115.8 + 24.4;
+                    console.log(`---${resp.code}---`);
+                    console.log('Buy call', buyCall, 'Sell put', sellPut);
+                    console.log('开仓', open);
+                    console.log('平仓', close);
+                    console.log('total', open + close);
+                }
+            });
+
+            x.forEach(resp => {
+                if (resp.code === '510300C2107M5500') {
+                    const sellCall = resp.call.buyPrice;
+                    const buyPut = - resp.put.sellPrice;
+                    const open = sellCall + buyPut;
+                    const close =  393.5 - 5.1;
+
+                    console.log('Sell call', resp.call.buyPrice, 'Buy put', - resp.put.sellPrice);
+                    console.log('开仓', open);
+                    console.log('平仓', close);
+                    console.log('total', open + close);
+                }
+            });
         });
     }
 
@@ -441,10 +486,60 @@ export class OptionCalculator {
         console.log(`Other Q ${otherQuarterPrice}, ${index500 - otherQuarterPrice}, AVG: ${(index500 - otherQuarterPrice) / daysOtherQuarter}`);
     }
 
-    public getCurrentContracts(): string[] {
-        const now = moment();
+    // TODO: Not implemented
+    public getRemainDays(): number {
+        const months = ['01', '02', '03', '04', '05', '06', '07', '08', '09', '10', '11', '12'];
+        const quaters = [2, 1, 3, 2, 1, 3, 2, 1, 3, 2, 1, 3, 2]; // 2 months, 1 month, 3 months
 
-        console.log(now, now.date());
+        const currentYear = moment().year();
+        const currentMonth = moment().month() + 1;
+
+        console.log(currentYear, currentMonth, months[currentMonth]);
+
+        const now = moment();
+        const thisMonthDeliveryDate = moment().startOf('month').day(14 + 5).add(1, 'day');
+
+        let frontMonth;
+        if (thisMonthDeliveryDate > now) {
+            frontMonth = currentMonth;
+        } else {
+            frontMonth = currentMonth === 12 ? 1 : currentMonth + 1;
+        }
+
+        console.log(currentMonth);
+        console.log(frontMonth);
+
+
+
+        for (let index = 1; index <= 12; index++) {
+            const monthString = '2021-' + (index > 9 ? '' : '0') + index;
+            console.log(monthString);
+
+            const monthsToAdd = quaters[index - 1 + 1];
+            console.log(index, monthsToAdd,
+                moment(monthString).format('yyyy-MM'),
+                moment(monthString).add(1, 'month').format('yyyy-MM'),
+                moment(monthString).add(1, 'month').add(monthsToAdd, 'month').format('yyyy-MM'),
+                moment(monthString).add(1, 'month').add(monthsToAdd, 'month').add(3, 'month').format('yyyy-MM'));
+        }
+
+
+
+        const futureExpireDay = moment('2021-07').day(14 + 5);
+        const remainDays = futureExpireDay.diff(moment(), 'days');
+
+        return remainDays;
+    }
+
+    // TODO: Not implemented
+    public getCurrentContracts(): string[] {
+        const now = moment('2021-08');
+
+        // console.log(now, now.date());
+        for (let index = 0; index < 30; index++) {
+            console.log(index, moment('2021-07').day(index));
+        }
+
         if (now > now.day(14 + 5)) {
             console.log(11);
         } else {
