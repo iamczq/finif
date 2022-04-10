@@ -1,4 +1,4 @@
-import { TradeDirection } from "./tradeDirection";
+import { TradeDirection } from './tradeDirection';
 
 export class Trade {
     code: string; // '510300C2112M5000',

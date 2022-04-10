@@ -1,8 +1,8 @@
-import chalk from "chalk";
+/* eslint-disable linebreak-style */
+import chalk from 'chalk';
 // todo: What's the {} here?
-import { prompt } from 'enquirer';
-import { Fetcher } from "./fetcher";
-import { OptionCalculator } from "./option/optionCalculator";
+import {prompt} from 'enquirer';
+import {OptionCalculator} from './option/optionCalculator';
 
 console.log('START');
 prompt({
@@ -15,15 +15,14 @@ prompt({
   //   + chalk.yellow(`4. Combine output.`) + '\r\n'
   //   + chalk.yellow(`5. Play!`) + '\r\n'
   //   + chalk.yellow(`6. Option!`),
-  message: chalk.yellowBright(`Choose options:\r\n`)
-    + chalk.yellow(`1. all`) + '\r\n'
-    + chalk.yellow(`2. 50`) + '\r\n'
-    + chalk.yellow(`3. IC`) + '\r\n'
-    + chalk.yellow(`4. IF`) + '\r\n'
-    + chalk.yellow(`5. IH`) + '\r\n'
-    + chalk.yellow(`6. ...`) + '\r\n'
+  message: chalk.yellowBright(`Choose options:\r\n`) +
+    chalk.yellow(`1. all`) + '\r\n' +
+    chalk.yellow(`2. 50`) + '\r\n' +
+    chalk.yellow(`3. IC`) + '\r\n' +
+    chalk.yellow(`4. IF`) + '\r\n' +
+    chalk.yellow(`5. IH`) + '\r\n' +
+    chalk.yellow(`6. ...`) + '\r\n',
 }).then((response: any) => {
-  const fetcher = new Fetcher();
   const options = new OptionCalculator();
   switch (response.select) {
     case '1':

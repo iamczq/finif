@@ -405,7 +405,8 @@ export class OptionCalculator {
                 "accept-language": "zh-CN,zh;q=0.9",
                 "sec-fetch-dest": "script",
                 "sec-fetch-mode": "no-cors",
-                "sec-fetch-site": "cross-site"
+                "sec-fetch-site": "cross-site",
+                "referer": "http://finance.sina.com.cn",
             },
             "method": "GET",
         });
@@ -434,27 +435,30 @@ export class OptionCalculator {
         let regIndex;
         switch (type) {
             case 'IC':
-                contract = 'sh000905,nf_IC2107,nf_IC2108,nf_IC2109,nf_IC2112';
+                contract = 'sh000905,nf_IC2204,nf_IC2205,nf_IC2206,nf_IC2209';
                 regIc = /(?<=var hq_str_nf_IC.*?=").*?(?=")/gmi;
                 regIndex = /(?<=hq_str_sh000905=").*?(?=")/gmi;
                 break;
             case 'IF':
-                contract = 'sh000300,nf_IF2107,nf_IF2108,nf_IF2109,nf_IF2112';
+                contract = 'sh000300,nf_IF2204,nf_IF2205,nf_IF2206,nf_IF2209';
                 regIc = /(?<=var hq_str_nf_IF.*?=").*?(?=")/gmi;
                 regIndex = /(?<=hq_str_sh000300=").*?(?=")/gmi;
                 break;
             case 'IH':
-                contract = 'sh000016,nf_IH2107,nf_IH2108,nf_IH2109,nf_IH2112';
+                contract = 'sh000016,nf_IH2204,nf_IH2205,nf_IH2206,nf_IH2209';
                 regIc = /(?<=var hq_str_nf_IH.*?=").*?(?=")/gmi;
                 regIndex = /(?<=hq_str_sh000016=").*?(?=")/gmi;
                 break;
             default:
                 throw new Error('Not valid futures');
         }
-        const months = ['2021-07', '2021-08', '2021-09', '2021-12'];
+        const months = ['2022-04', '2022-05', '2022-06', '2022-09'];
 
         const req = await fetch(`https://hq.sinajs.cn/?list=${contract}`, {
             "method": "GET",
+            "headers": {
+                "referer": "http://finance.sina.com.cn",
+            }
         });
 
         const resp = iconv.decode(await req.buffer(), 'GB18030');

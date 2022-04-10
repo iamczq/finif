@@ -61,7 +61,7 @@ export class FinancialOption implements IOption {
     // TODO
     delta(): number {
         return 0;
-    };
+    }
 
     timeValue(): number {
         // console.log(this.code, this.executionPrice, this.underlyingPrice, this.price);

@@ -176,7 +176,7 @@ export class Fetcher {
 
         for (let i = 5; i <= 14; i++) {
             const content = fs.readFileSync(`data/output-${i}.json`);
-            let obj = JSON.parse(content.toString());
+            const obj = JSON.parse(content.toString());
             const dataList = obj.data.dataList;
 
             ipo = ipo.concat(dataList);
@@ -210,7 +210,7 @@ export class Fetcher {
                 }
 
                 if (data.ipoPricing && data.firstPrice) {
-                    let p = (data.firstPrice - data.ipoPricing)
+                    const p = (data.firstPrice - data.ipoPricing)
                         * stockObj.data.issuanceinfo.shares
                         * Number.parseFloat(stockObj.data.issuanceinfo.codesrate) / 100;
                     allProfit.push(p);
