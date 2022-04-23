@@ -23,7 +23,8 @@ export class Sina300IndexOptionProvider implements IDataProvider<Promise<IOption
                 "sec-fetch-mode": "cors",
                 "sec-fetch-site": "same-origin",
                 "x-requested-with": "XMLHttpRequest",
-                "cookie": "STOCK7-FINANCE-SINA-COM-CN=; UOR=,stock.finance.sina.com.cn,; ULV=1617026222335:1:1:1::; sinaH5EtagStatus=n; SINAGLOBAL=165.225.116.142_1617026230.616170; Apache=165.225.116.142_1617026230.616172"
+                "cookie": "STOCK7-FINANCE-SINA-COM-CN=; UOR=,stock.finance.sina.com.cn,; ULV=1617026222335:1:1:1::; sinaH5EtagStatus=n; SINAGLOBAL=165.225.116.142_1617026230.616170; Apache=165.225.116.142_1617026230.616172",
+                "referer": "http://finance.sina.com.cn",
             },
             "method": "GET",
         });
@@ -34,7 +35,8 @@ export class Sina300IndexOptionProvider implements IDataProvider<Promise<IOption
                 "accept-language": "zh-CN,zh;q=0.9",
                 "sec-fetch-dest": "script",
                 "sec-fetch-mode": "no-cors",
-                "sec-fetch-site": "cross-site"
+                "sec-fetch-site": "cross-site",
+                "referer": "http://finance.sina.com.cn",
             },
             "method": "GET",
         });

@@ -30,6 +30,7 @@ prompt({
       break;
     case '2':
       options.get50Etf();
+      options.analyze50etf();
       break;
     case '3':
       options.analyzeFutures('IC');

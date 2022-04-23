@@ -18,21 +18,7 @@ export class OptionCalculator {
         const indexOptionsPromise: { [contract: string]: Promise<IOptionPair[]> } = {};
         let contract = '';
 
-        // contract = '2206';
-        // futuresPromise[contract] = this.getFutures(contract);
-        // indexOptionsPromise[contract] = this.getSina300IndexOptions(contract);
-
-        // console.log(chalk.green(`${contract}: index`));
-        // await this.calculatePremium(futuresPromise[contract], indexOptionsPromise[contract]);
-
-        // contract = '2203';
-        // futuresPromise[contract] = this.getFutures(contract);
-        // indexOptionsPromise[contract] = this.getSina300IndexOptions(contract);
-
-        // console.log(chalk.green(`${contract}: index`));
-        // await this.calculatePremium(futuresPromise[contract], indexOptionsPromise[contract]);
-
-        contract = '2112';
+        contract = '2209';
         futuresPromise[contract] = this.getFutures(contract);
         etfOptionsPromise[contract] = this.getSina300EtfOptions(contract);
         indexOptionsPromise[contract] = this.getSina300IndexOptions(contract);
@@ -42,7 +28,7 @@ export class OptionCalculator {
         console.log(chalk.green(`${contract}: index`));
         await this.calculatePremium(futuresPromise[contract], indexOptionsPromise[contract]);
 
-        contract = '2109';
+        contract = '2206';
         futuresPromise[contract] = this.getFutures(contract);
         etfOptionsPromise[contract] = this.getSina300EtfOptions(contract);
         indexOptionsPromise[contract] = this.getSina300IndexOptions(contract);
@@ -52,7 +38,7 @@ export class OptionCalculator {
         console.log(chalk.green(`${contract}: index`));
         await this.calculatePremium(futuresPromise[contract], indexOptionsPromise[contract]);
 
-        contract = '2108';
+        contract = '2205';
         futuresPromise[contract] = this.getFutures(contract);
         etfOptionsPromise[contract] = this.getSina300EtfOptions(contract);
         indexOptionsPromise[contract] = this.getSina300IndexOptions(contract);
@@ -62,7 +48,7 @@ export class OptionCalculator {
         console.log(chalk.green(`${contract}: index`));
         await this.calculatePremium(futuresPromise[contract], indexOptionsPromise[contract]);
 
-        contract = '2107';
+        contract = '2204';
         futuresPromise[contract] = this.getFutures(contract);
         etfOptionsPromise[contract] = this.getSina300EtfOptions(contract);
         indexOptionsPromise[contract] = this.getSina300IndexOptions(contract);
@@ -72,7 +58,7 @@ export class OptionCalculator {
         console.log(chalk.green(`${contract}: index`));
         await this.calculatePremium(futuresPromise[contract], indexOptionsPromise[contract]);
 
-        await this.watchMyPosition(etfOptionsPromise, indexOptionsPromise);
+        // await this.watchMyPosition(etfOptionsPromise, indexOptionsPromise);
 
         // await this.get50Etf();
 
@@ -330,7 +316,8 @@ export class OptionCalculator {
                 "sec-fetch-mode": "navigate",
                 "sec-fetch-site": "none",
                 "sec-fetch-user": "?1",
-                "upgrade-insecure-requests": "1"
+                "upgrade-insecure-requests": "1",
+                "referer": "http://finance.sina.com.cn",
             },
             "method": "GET",
         });
@@ -562,25 +549,25 @@ export class OptionCalculator {
             setTimeout(resolve, 0);
         });
 
-        contract = '2112';
+        contract = '2209';
         etfOptionsPromise[contract] = this.getSina50EtfOptions(contract);
 
         console.log(chalk.green(`${contract}: etf`));
         await this.calculatePremium(x, etfOptionsPromise[contract]);
 
-        contract = '2109';
+        contract = '2206';
         etfOptionsPromise[contract] = this.getSina50EtfOptions(contract);
 
         console.log(chalk.green(`${contract}: etf`));
         await this.calculatePremium(x, etfOptionsPromise[contract]);
 
-        contract = '2108';
+        contract = '2205';
         etfOptionsPromise[contract] = this.getSina50EtfOptions(contract);
 
         console.log(chalk.green(`${contract}: etf`));
         await this.calculatePremium(x, etfOptionsPromise[contract]);
 
-        contract = '2107';
+        contract = '2204';
         etfOptionsPromise[contract] = this.getSina50EtfOptions(contract);
 
         console.log(chalk.green(`${contract}: etf`));

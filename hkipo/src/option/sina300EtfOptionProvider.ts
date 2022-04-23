@@ -53,7 +53,8 @@ export class SinaEtfOptionProvider implements IDataProvider<Promise<IOptionPair[
                     "accept-language": "zh-CN,zh;q=0.9",
                     "sec-fetch-dest": "script",
                     "sec-fetch-mode": "no-cors",
-                    "sec-fetch-site": "cross-site"
+                    "sec-fetch-site": "cross-site",
+                    "referer": "http://finance.sina.com.cn",
                 },
                 "method": "GET",
             });
@@ -79,7 +80,8 @@ export class SinaEtfOptionProvider implements IDataProvider<Promise<IOptionPair[
                 "accept-language": "zh-CN,zh;q=0.9",
                 "sec-fetch-dest": "script",
                 "sec-fetch-mode": "no-cors",
-                "sec-fetch-site": "cross-site"
+                "sec-fetch-site": "cross-site",
+                "referer": "http://finance.sina.com.cn",
             },
             "method": "GET",
         });
