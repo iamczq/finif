@@ -12,15 +12,16 @@ export interface IOption {
     position: number,
     changePercent: number,
     underlyingPrice: number,
-    remainDays: () => number,
+    remainDays: number,
     // 风险值
-    timeValue: () => number,
-    // intrinsicValue: number,
-    delta: () => number,
-    // gamma: number,
-    // theta: number,
-    // vega: number,
-    // iv: number,
+    timeValue: number,
+    intrinsicValue: number,
+    delta: number,
+    gamma: number,
+    theta: number,
+    vega: number,
+    rho: number,
+    iv: number,
 }
 
 export interface IOptionPair {

@@ -161,28 +161,28 @@ export class OptionCalculator {
 
             x.forEach(resp => {
                 if (resp.code === 'io2107C5200') {
-                    console.log('aaaaaaaaaaaaaaaaaa', resp.call.remainDays());
+                    console.log('aaaaaaaaaaaaaaaaaa', resp.call.remainDays);
                     
-                    console.log(`${this.directionString('B')}: ${resp.code} time value: ${resp.call.timeValue()} price: ${resp.call.price}`);
+                    console.log(`${this.directionString('B')}: ${resp.code} time value: ${resp.call.timeValue} price: ${resp.call.price}`);
                 }
             });
 
             x.forEach(resp => {
                 if (resp.code === '510300C2107M5250') {
-                    console.log('bbbbbbbbbbbbbbbbbbb', resp.call.remainDays());
-                    console.log(`${this.directionString('S')}: ${resp.code} time value: ${resp.call.timeValue()} price: ${resp.call.price}`);
+                    console.log('bbbbbbbbbbbbbbbbbbb', resp.call.remainDays);
+                    console.log(`${this.directionString('S')}: ${resp.code} time value: ${resp.call.timeValue} price: ${resp.call.price}`);
                 }
             });
 
             x.forEach(resp => {
                 if (resp.code === 'io2107C5500') {
-                    console.log(`${this.directionString('B')}: ${resp.code} time value: ${resp.call.timeValue()} price: ${resp.call.price}`);
+                    console.log(`${this.directionString('B')}: ${resp.code} time value: ${resp.call.timeValue} price: ${resp.call.price}`);
                 }
             });
 
             x.forEach(resp => {
                 if (resp.code === '510300C2107M5500') {
-                    console.log(`${this.directionString('S')}: ${resp.code} time value: ${resp.call.timeValue()} price: ${resp.call.price}`);
+                    console.log(`${this.directionString('S')}: ${resp.code} time value: ${resp.call.timeValue} price: ${resp.call.price}`);
                 }
             });
 
@@ -192,18 +192,18 @@ export class OptionCalculator {
             let timeValueFar = 0;
             x.forEach(resp => {
                 if (resp.code === '510300C2107M5000') {
-                    console.log(`${this.directionString('B')}: ${resp.code} time value: ${resp.call.timeValue()}`);
-                    timeValueFront = resp.call.timeValue();
+                    console.log(`${this.directionString('B')}: ${resp.code} time value: ${resp.call.timeValue}`);
+                    timeValueFront = resp.call.timeValue;
                 }
 
                 if (resp.code === '510300C2108M5000') {
-                    console.log(`${this.directionString('S')}: ${resp.code} time value: ${resp.call.timeValue()}`);
-                    timeValueNext = resp.call.timeValue();
+                    console.log(`${this.directionString('S')}: ${resp.code} time value: ${resp.call.timeValue}`);
+                    timeValueNext = resp.call.timeValue;
                 }
 
                 if (resp.code === '510300C2109M5000') {
-                    console.log(`${this.directionString('B')}: ${resp.code} time value: ${resp.call.timeValue()}`);
-                    timeValueFar = resp.call.timeValue();
+                    console.log(`${this.directionString('B')}: ${resp.code} time value: ${resp.call.timeValue}`);
+                    timeValueFar = resp.call.timeValue;
                 }
             });
             console.log(`Time value delta AUG - JULY: ${timeValueNext - timeValueFront}. (It was 32 on JUN 24th. Last time change: 65.)`);
@@ -220,8 +220,8 @@ export class OptionCalculator {
             let farUnderlying = 0;
             x.forEach(resp => {
                 if (resp.code === '510300C2108M5500') {
-                    console.log(`${this.directionString('S')}: ${resp.call.code} time value: ${resp.call.timeValue()}. Buy Price: ${resp.call.buyPrice}. Sell Price: ${resp.call.sellPrice}`);
-                    console.log(`${this.directionString('B')}: ${resp.put.code} time value: ${resp.put.timeValue()}. Buy Price: ${resp.put.buyPrice}. Sell Price: ${resp.put.sellPrice}`);
+                    console.log(`${this.directionString('S')}: ${resp.call.code} time value: ${resp.call.timeValue}. Buy Price: ${resp.call.buyPrice}. Sell Price: ${resp.call.sellPrice}`);
+                    console.log(`${this.directionString('B')}: ${resp.put.code} time value: ${resp.put.timeValue}. Buy Price: ${resp.put.buyPrice}. Sell Price: ${resp.put.sellPrice}`);
                     const changeShortOppositePrice = - resp.put.sellPrice + resp.call.buyPrice + resp.call.executionPrice - resp.call.underlyingPrice;
                     const changeLongOppositePrice = resp.put.buyPrice - resp.call.sellPrice - resp.call.executionPrice + resp.call.underlyingPrice;
                     console.log(`What if change ${resp.code}`, changeShortOppositePrice, changeShortOppositePrice);
@@ -230,8 +230,8 @@ export class OptionCalculator {
 
             x.forEach(resp => {
                 if (resp.code === '510300C2107M5500') {
-                    console.log(`${this.directionString('S')}: ${resp.call.code} time value: ${resp.call.timeValue()}. Buy Price: ${resp.call.buyPrice}. Sell Price: ${resp.call.sellPrice}`);
-                    console.log(`${this.directionString('B')}: ${resp.put.code} time value: ${resp.put.timeValue()}. Buy Price: ${resp.put.buyPrice}. Sell Price: ${resp.put.sellPrice}`);
+                    console.log(`${this.directionString('S')}: ${resp.call.code} time value: ${resp.call.timeValue}. Buy Price: ${resp.call.buyPrice}. Sell Price: ${resp.call.sellPrice}`);
+                    console.log(`${this.directionString('B')}: ${resp.put.code} time value: ${resp.put.timeValue}. Buy Price: ${resp.put.buyPrice}. Sell Price: ${resp.put.sellPrice}`);
                     nearShortOppositePrice = - resp.put.sellPrice + resp.call.buyPrice + resp.call.executionPrice - resp.call.underlyingPrice;
                     nearLongOppositePrice = resp.put.buyPrice - resp.call.sellPrice - resp.call.executionPrice + resp.call.underlyingPrice;
                     nearShortCurrentPrice = - resp.put.price + resp.call.price + resp.call.executionPrice - resp.call.underlyingPrice;
@@ -241,8 +241,8 @@ export class OptionCalculator {
 
             x.forEach(resp => {
                 if (resp.code === 'io2107C5000') {
-                    console.log(`${this.directionString('B')}: ${resp.call.code} time value: ${resp.call.timeValue()}. Buy Price: ${resp.call.buyPrice}. Sell Price: ${resp.call.sellPrice}`);
-                    console.log(`${this.directionString('S')}: ${resp.put.code} time value: ${resp.put.timeValue()}. Buy Price: ${resp.put.buyPrice}. Sell Price: ${resp.put.sellPrice}`);
+                    console.log(`${this.directionString('B')}: ${resp.call.code} time value: ${resp.call.timeValue}. Buy Price: ${resp.call.buyPrice}. Sell Price: ${resp.call.sellPrice}`);
+                    console.log(`${this.directionString('S')}: ${resp.put.code} time value: ${resp.put.timeValue}. Buy Price: ${resp.put.buyPrice}. Sell Price: ${resp.put.sellPrice}`);
                     farLongOppositePrice = - resp.call.sellPrice + resp.put.buyPrice - resp.call.executionPrice + resp.call.underlyingPrice;
                     farLongCurrentPrice = - resp.call.price + resp.put.price - resp.call.executionPrice + resp.call.underlyingPrice;
                     farShortOppositePrice = resp.call.buyPrice - resp.put.sellPrice + resp.call.executionPrice - resp.call.underlyingPrice;

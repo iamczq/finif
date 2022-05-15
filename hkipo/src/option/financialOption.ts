@@ -1,6 +1,8 @@
 import moment from "moment";
 import { IOption } from "./IOption";
 import { UnderlyingType } from "./underlyingType";
+import { blackScholes } from "./blackScholes";
+import { calendar } from "../util/calendar";
 
 export class FinancialOption implements IOption {
     code: string;
@@ -15,13 +17,8 @@ export class FinancialOption implements IOption {
     position: number;
     changePercent: number;
     underlyingPrice: number;
-    // _timeValue: number;
-    // _intrinsicValue: number;
-    // _delta: number;
-    // _gamma: number;
-    // _theta: number;
-    // _vega: number;
-    // _iv: number;
+    readonly bs: blackScholes;
+    readonly rate: number = 0.03;
 
     constructor(initializer: {
         code: string,
@@ -49,23 +46,35 @@ export class FinancialOption implements IOption {
         this.position = initializer.position;
         this.changePercent = initializer.changePercent;
         this.underlyingPrice = initializer.underlyingPrice;
-        // this.timeValue = initializer.timeValue;
-        // this.intrinsicValue = initializer.intrinsicValue;
-        // this.delta = initializer.delta;
-        // this.gamma = initializer.gamma;
-        // this.theta = initializer.theta;
-        // this.vega = initializer.vega;
-        // this.iv = initializer.iv;
+
+        this.bs = new blackScholes();
     }
 
-    // TODO
-    delta(): number {
-        return 0;
+    get delta(): number {
+        return this.bs.getDelta(this.type, this.underlyingPrice, this.executionPrice, this.remainDays, this.rate, this.iv);
     }
 
-    timeValue(): number {
-        // console.log(this.code, this.executionPrice, this.underlyingPrice, this.price);
+    get gamma(): number {
+        return this.bs.getGamma(this.underlyingPrice, this.executionPrice, this.remainDays, this.rate, this.iv);
+    }
 
+    get theta(): number {
+        return this.bs.getTheta(this.type, this.underlyingPrice, this.executionPrice, this.remainDays, this.rate, this.iv);
+    }
+
+    get vega(): number {
+        return this.bs.getVega(this.underlyingPrice, this.executionPrice, this.remainDays, this.rate, this.iv);
+    }
+
+    public get rho(): number {
+        return this.bs.getRho(this.type, this.underlyingPrice, this.executionPrice, this.remainDays, this.rate, this.iv);
+    }
+
+    get iv(): number {
+        return this.bs.getImpliedVolatility(this.type, this.underlyingPrice, this.executionPrice, this.remainDays, this.rate, this.price);
+    }
+
+    get timeValue(): number {
         let callPut;
         if (this.code.toUpperCase().indexOf('C') > 0) {
             callPut = 'C';
@@ -84,26 +93,27 @@ export class FinancialOption implements IOption {
         }
     }
 
-    // TODO: Not implemented?
-    public remainDays(): number {
-        const month = '20' + this.month.substring(0,2) + '-' + this.month.substring(2,4);
-        let days;
-        // If the first day of this month > Wednesday.
-        // moment(month)                  > moment(month).day(3)
-        if (moment(month).day(3) < moment(month)) {
-            days = 28 + 3;
+    get intrinsicValue(): number {
+        return this.price - this.timeValue;
+    }
+    
+    public get expireDay() : moment.Moment {
+        if (this.underlyingType === UnderlyingType.ETF) {
+            return calendar.getExpireDate(this.month, 4, 3);
         } else {
-            days = 21 + 3;
+            return calendar.getExpireDate(this.month, 3, 5);
         }
-        
-        const futureExpireDay = moment(month).day(days);
+    }
+
+    public get remainDays(): number {
+        const futureExpireDay = this.expireDay;
         const today = moment(moment().format('YYYY-MM-DD'));
         const remainDays = futureExpireDay.diff(today, 'days');
 
         return remainDays;
     }
 
-    underlyingType(): UnderlyingType {
+    get underlyingType(): UnderlyingType {
         const isIndex = this.code.indexOf('io') === 0;
         const isEtf = this.code.search(/^\d/) === 0;
         let underlyingType;
@@ -113,7 +123,7 @@ export class FinancialOption implements IOption {
         } else if (isEtf) {
             underlyingType = UnderlyingType.ETF;
         } else {
-            throw new Error(`Invlid code ${this.code}`);
+            throw new Error(`Invalid code ${this.code}`);
         }
 
         return underlyingType;
@@ -126,7 +136,7 @@ export class FinancialOption implements IOption {
      */
     multiplierFromPriceToIndexPoint(): number {
         let multiplier;
-        if (this.underlyingType() === UnderlyingType.ETF) {
+        if (this.underlyingType === UnderlyingType.ETF) {
             multiplier = 1000;
         } else {
             multiplier = 1;
