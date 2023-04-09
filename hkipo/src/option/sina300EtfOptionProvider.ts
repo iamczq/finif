@@ -71,8 +71,12 @@ export class SinaEtfOptionProvider implements IDataProvider<Promise<IOptionPair[
         const regCodeCalls = /hq_str_OP_UP_.+?"(.+?)";/;
         const regCodePuts = /hq_str_OP_DOWN_.+?"(.+?)";/;
 
-        const codeCalls = regCodeCalls.exec(raw) || ['Regex failed', 'Regex failed'];
-        const codePuts = regCodePuts.exec(raw) || ['Regex failed', 'Regex failed'];
+        const codeCalls = regCodeCalls.exec(raw);
+        const codePuts = regCodePuts.exec(raw);
+
+        if (!codeCalls || !codePuts) {
+            throw new Error(`${raw} doesn't have valid call or put codes. Please check contract month.`);
+        }
 
         const request = await fetch(`https://hq.sinajs.cn/list=${codeCalls[1]},${codePuts[1]},s_sh${etf}`, {
             "headers": {

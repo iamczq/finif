@@ -9,6 +9,7 @@ import { SyntheticSpotPositionWatcher } from './position/syntheticSpotPositionWa
 import { SyntheticSpotPosition, SyntheticSpotPositionTypes } from './position/syntheticSpotPosition';
 import { PositionStatus } from './position/positionStatus';
 import { TradeDirection } from '../trade/tradeDirection';
+import { Calendar } from '../util/calendar';
 
 export class OptionCalculator {
 
@@ -18,7 +19,7 @@ export class OptionCalculator {
         const indexOptionsPromise: { [contract: string]: Promise<IOptionPair[]> } = {};
         let contract = '';
 
-        contract = '2209';
+        contract = Calendar.getEtfNextNextQuarterString();
         futuresPromise[contract] = this.getFutures(contract);
         etfOptionsPromise[contract] = this.getSina300EtfOptions(contract);
         indexOptionsPromise[contract] = this.getSina300IndexOptions(contract);
@@ -28,7 +29,7 @@ export class OptionCalculator {
         console.log(chalk.green(`${contract}: index`));
         await this.calculatePremium(futuresPromise[contract], indexOptionsPromise[contract]);
 
-        contract = '2206';
+        contract = Calendar.getEtfNextQuarterString();
         futuresPromise[contract] = this.getFutures(contract);
         etfOptionsPromise[contract] = this.getSina300EtfOptions(contract);
         indexOptionsPromise[contract] = this.getSina300IndexOptions(contract);
@@ -38,7 +39,7 @@ export class OptionCalculator {
         console.log(chalk.green(`${contract}: index`));
         await this.calculatePremium(futuresPromise[contract], indexOptionsPromise[contract]);
 
-        contract = '2205';
+        contract = Calendar.getEtfNextMonthString();
         futuresPromise[contract] = this.getFutures(contract);
         etfOptionsPromise[contract] = this.getSina300EtfOptions(contract);
         indexOptionsPromise[contract] = this.getSina300IndexOptions(contract);
@@ -48,7 +49,7 @@ export class OptionCalculator {
         console.log(chalk.green(`${contract}: index`));
         await this.calculatePremium(futuresPromise[contract], indexOptionsPromise[contract]);
 
-        contract = '2204';
+        contract = Calendar.getEtfCurrentMonthString();
         futuresPromise[contract] = this.getFutures(contract);
         etfOptionsPromise[contract] = this.getSina300EtfOptions(contract);
         indexOptionsPromise[contract] = this.getSina300IndexOptions(contract);

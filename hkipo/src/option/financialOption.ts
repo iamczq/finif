@@ -2,7 +2,7 @@ import moment from "moment";
 import { IOption } from "./IOption";
 import { UnderlyingType } from "./underlyingType";
 import { blackScholes } from "./blackScholes";
-import { calendar } from "../util/calendar";
+import { Calendar } from "../util/calendar";
 
 export class FinancialOption implements IOption {
     code: string;
@@ -99,9 +99,9 @@ export class FinancialOption implements IOption {
     
     public get expireDay() : moment.Moment {
         if (this.underlyingType === UnderlyingType.ETF) {
-            return calendar.getExpireDate(this.month, 4, 3);
+            return Calendar.getExpireDate(this.month, 4, 3);
         } else {
-            return calendar.getExpireDate(this.month, 3, 5);
+            return Calendar.getExpireDate(this.month, 3, 5);
         }
     }
 
