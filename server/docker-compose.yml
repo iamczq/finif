@@ -1,0 +1,10 @@
+version: '1'
+
+services:
+  db:
+    image: mongo
+    restart: "no"
+    ports:
+      - 27017:27017
+    environment:
+      MONGO_DATABASE: finif
