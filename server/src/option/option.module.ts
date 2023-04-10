@@ -5,6 +5,7 @@ import { OptionDataProviderFactoryService } from './data-providers/option-data-p
 import { OptionsController } from './options/options.controller';
 import { MongooseModule } from '@nestjs/mongoose';
 import { SinaContractCode, SinaContractCodeSchema } from './entities/contract.entity';
+import { SinaIndexOptionDataProviderService } from './data-providers/sina-index-option-data-provider.service';
 
 @Module({
   imports: [
@@ -18,8 +19,9 @@ import { SinaContractCode, SinaContractCodeSchema } from './entities/contract.en
   ],
   providers: [
     OptionsService,
+    OptionDataProviderFactoryService,
     SinaEtfOptionDataProviderService,
-    OptionDataProviderFactoryService
+    SinaIndexOptionDataProviderService
   ]
 })
 export class OptionModule { }
