@@ -9,7 +9,9 @@ describe('SinaIndexOptionDataProviderServiceService', () => {
       providers: [SinaIndexOptionDataProviderService],
     }).compile();
 
-    service = module.get<SinaIndexOptionDataProviderService>(SinaIndexOptionDataProviderService);
+    service = module.get<SinaIndexOptionDataProviderService>(
+      SinaIndexOptionDataProviderService,
+    );
   });
 
   it('should be defined', () => {
