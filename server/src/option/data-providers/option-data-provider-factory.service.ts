@@ -4,18 +4,18 @@ import { SinaIndexOptionDataProviderService } from './sina-index-option-data-pro
 
 @Injectable()
 export class OptionDataProviderFactoryService {
-    constructor(
-        private sinaEtfOptionDataProvider: SinaEtfOptionDataProviderService,
-        private sinaIndexOptionDataProvider: SinaIndexOptionDataProviderService,
-    ) { }
+  constructor(
+    private sinaEtfOptionDataProvider: SinaEtfOptionDataProviderService,
+    private sinaIndexOptionDataProvider: SinaIndexOptionDataProviderService,
+  ) {}
 
-    getProvider (underlying: string) {
-        if (/^\d/.test(underlying)) {
-            return this.sinaEtfOptionDataProvider;
-        } else if (/^[a-zA-Z]/.test(underlying)) {
-            return this.sinaIndexOptionDataProvider;
-        } else {
-            throw new Error('Not supported option');
-        }
+  getProvider(underlying: string) {
+    if (/^\d/.test(underlying)) {
+      return this.sinaEtfOptionDataProvider;
+    } else if (/^[a-zA-Z]/.test(underlying)) {
+      return this.sinaIndexOptionDataProvider;
+    } else {
+      throw new Error('Not supported option');
     }
+  }
 }

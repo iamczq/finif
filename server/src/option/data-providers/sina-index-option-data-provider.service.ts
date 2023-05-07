@@ -2,6 +2,8 @@ import { Injectable } from '@nestjs/common';
 import { OptionQuoteDto } from '../dto/option-quote.dto';
 import fetch from 'node-fetch';
 import * as iconv from 'iconv-lite';
+import * as _ from 'lodash';
+import { Calendar } from '../../util/calendar';
 
 @Injectable()
 export class SinaIndexOptionDataProviderService {
@@ -71,7 +73,7 @@ export class SinaIndexOptionDataProviderService {
         console.warn('Something must be changed!!!');
       }
 
-      return new OptionQuoteDto({
+      const initializer: any = {
         buyVol: parseFloat(call[0]),
         buyPrice: parseFloat(call[1]),
         price: parseFloat(call[2]),
@@ -84,7 +86,11 @@ export class SinaIndexOptionDataProviderService {
         month: (call[8] as string).substring(2, 6),
         type: 'C',
         underlyingPrice: underlyingPrice,
-      });
+      };
+
+      initializer.expireDays = this.getExpirationDays(initializer.month);
+
+      return new OptionQuoteDto(initializer);
     });
 
     const mappedPuts: OptionQuoteDto[] = puts.map((put) => {
@@ -92,7 +98,7 @@ export class SinaIndexOptionDataProviderService {
         console.warn('Something must be changed!!!');
       }
 
-      return new OptionQuoteDto({
+      const initializer: any = {
         buyVol: parseFloat(put[0]),
         buyPrice: parseFloat(put[1]),
         price: parseFloat(put[2]),
@@ -105,9 +111,14 @@ export class SinaIndexOptionDataProviderService {
         month: (put[7] as string).substring(2, 6),
         type: 'P',
         underlyingPrice: underlyingPrice,
-      });
+      };
+      initializer.expireDays = this.getExpirationDays(initializer.month);
+
+      return new OptionQuoteDto(initializer);
     });
 
     return mappedQuotes.concat(mappedPuts);
   }
+
+  private getExpirationDays = _.memoize(Calendar.getExpirationDays);
 }
