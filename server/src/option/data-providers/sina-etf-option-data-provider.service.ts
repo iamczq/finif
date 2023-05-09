@@ -20,64 +20,51 @@ export class SinaEtfOptionDataProviderService {
     private readonly sinaContractCodeModel: Model<SinaContractCode>,
   ) {}
 
-  async getQuote(
-    underlying: string,
-    contractMonth: string,
-  ): Promise<OptionQuoteDto[]> {
+  async getQuote(underlying: string, contractMonth: string): Promise<OptionQuoteDto[]> {
     const contracts = await this.getContracts(underlying, contractMonth);
 
     // contracts is like: CON_OP_10005251,CON_OP_10005241...
-    const request = await fetch(
-      `https://hq.sinajs.cn/list=${contracts},s_sh${underlying}`,
-      {
-        headers: {
-          accept: '*/*',
-          'accept-language': 'zh-CN,zh;q=0.9',
-          'sec-fetch-dest': 'script',
-          'sec-fetch-mode': 'no-cors',
-          'sec-fetch-site': 'cross-site',
-          referer: 'http://finance.sina.com.cn',
-        },
-        method: 'GET',
+    const request = await fetch(`https://hq.sinajs.cn/list=${contracts},s_sh${underlying}`, {
+      headers: {
+        accept: '*/*',
+        'accept-language': 'zh-CN,zh;q=0.9',
+        'sec-fetch-dest': 'script',
+        'sec-fetch-mode': 'no-cors',
+        'sec-fetch-site': 'cross-site',
+        referer: 'http://finance.sina.com.cn',
       },
-    );
+      method: 'GET',
+    });
 
     const rawBuffer = await request.buffer();
     const rawOptions = iconv.decode(rawBuffer, 'GB18030');
 
-    const underlyingQuote = rawOptions.match(this.regUnderlying) || [
-      'Regex failed',
-    ];
+    const underlyingQuote = rawOptions.match(this.regUnderlying) || ['Regex failed'];
     const quotes = rawOptions.match(this.regQuotes) || ['Regex failed'];
 
     const mappedQuotes: OptionQuoteDto[] = quotes.map((quote) => {
       let type;
       if (this.regCallName.test(quote)) {
-        quote = quote.replace(
-          this.regCallName,
-          `${underlying}C${contractMonth}M`,
-        );
+        quote = quote.replace(this.regCallName, `${underlying}C${contractMonth}M`);
         type = 'C';
       } else if (this.regPutName.test(quote)) {
-        quote = quote.replace(
-          this.regPutName,
-          `${underlying}P${contractMonth}M`,
-        );
+        quote = quote.replace(this.regPutName, `${underlying}P${contractMonth}M`);
         type = 'P';
       }
       const arr = quote.split(',');
       const initializer: any = {
         buyVol: parseFloat(arr[0]),
-        buyPrice: parseFloat(arr[1]) * 1000,
-        price: parseFloat(arr[2]) * 1000,
-        sellPrice: parseFloat(arr[3]) * 1000,
+        buyPrice: parseFloat(arr[1]),
+        price: parseFloat(arr[2]),
+        sellPrice: parseFloat(arr[3]),
         sellVol: parseFloat(arr[4]),
         position: parseFloat(arr[5]),
         changePercent: parseFloat(arr[6]),
-        executionPrice: parseFloat(arr[7]) * 1000,
+        executionPrice: parseFloat(arr[7]),
         code: arr[37] as string,
         month: (arr[37] as string).substring(7, 11),
         type: type,
+        underlyingPrice: parseFloat(underlyingQuote[0].split(',')[1]),
       };
       initializer.expireDays = this.getExpirationDays(initializer.month);
 
@@ -130,9 +117,7 @@ export class SinaEtfOptionDataProviderService {
     const codePuts = regCodePuts.exec(raw);
 
     if (!codeCalls || !codePuts) {
-      throw new Error(
-        `${raw} doesn't have valid call or put codes. Please check contract month.`,
-      );
+      throw new Error(`${raw} doesn't have valid call or put codes. Please check contract month.`);
     }
 
     return `${codeCalls[1]},${codePuts[1]}`;

@@ -10,7 +10,7 @@ export class OptionsController {
   public async getQuote(
     @Param('id') id: string,
     @Param('contract') contract: string,
-  ) {
+  ): Promise<OptionQuoteDto[]> {
     return await this.optionService.getQuote(id, contract);
   }
 
@@ -19,11 +19,15 @@ export class OptionsController {
     @Query('underlying') underlying: string,
     @Query('contract') contract: string,
     @Query('nearContract') nearContract: string,
+    @Query('valuation') valuation: number,
+    @Query('spread') spread: number,
   ) {
     if (nearContract) {
-      return this.getDoubleContractYield(underlying, contract, nearContract);
+      return this.getDoubleContractYield(underlying, contract, nearContract, valuation);
+    } else if (spread > 0) {
+      return this.getSpreadYield(underlying, contract, spread);
     } else {
-      return this.getSingleContractYield(underlying, contract);
+      return this.getSingleContractYield(underlying, contract, valuation);
     }
   }
 
@@ -32,40 +36,37 @@ export class OptionsController {
     return (rate * 100).toFixed(4) + '%';
   }
 
-  private async getSingleContractYield(underlying: string, contract: string) {
+  private async getSingleContractYield(underlying: string, contract: string, valuation: number) {
     const quotes = await this.getOutOfTheMoneyPutQuotes(underlying, contract);
 
     return quotes.map((quote) => {
+      const maxYield = this.yieldFunc(
+        quote.sellPrice,
+        quote.expireDays,
+        quote.executionPrice - valuation,
+      );
+
+      const minYield = this.yieldFunc(
+        quote.buyPrice,
+        quote.expireDays,
+        quote.executionPrice - valuation,
+      );
+
       return {
         executionPrice: quote.executionPrice,
         expireDays: quote.expireDays,
-        sellYield: this.yieldFunc(
-          quote.sellPrice,
-          quote.expireDays,
-          quote.executionPrice - 2000,
-        ),
-        buyYield: this.yieldFunc(
-          quote.buyPrice,
-          quote.expireDays,
-          quote.executionPrice - 2000,
-        ),
+        sellYield: maxYield,
+        buyYield: minYield,
         sellPrice: quote.sellPrice,
         base: quote.executionPrice - 2000,
       };
     });
   }
 
-  private async getOutOfTheMoneyPutQuotes(
-    underlying: string,
-    contract: string,
-  ) {
+  private async getOutOfTheMoneyPutQuotes(underlying: string, contract: string) {
     const quotes = await this.optionService.getQuote(underlying, contract);
     const underlyingPrice = quotes[0].underlyingPrice;
-    const putQuotes = quotes.filter(
-      (quote) =>
-        quote.type.toLowerCase() === 'p' &&
-        quote.executionPrice < underlyingPrice + 100,
-    );
+    const putQuotes = quotes.filter((quote) => quote.type.toLowerCase() === 'p');
     return putQuotes;
   }
 
@@ -73,15 +74,10 @@ export class OptionsController {
     underlying: string,
     contract: string,
     nearContract: string,
+    valuation: number,
   ) {
-    const farQuotes = await this.getOutOfTheMoneyPutQuotes(
-      underlying,
-      contract,
-    );
-    const nearQuotes = await this.getOutOfTheMoneyPutQuotes(
-      underlying,
-      nearContract,
-    );
+    const farQuotes = await this.getOutOfTheMoneyPutQuotes(underlying, contract);
+    const nearQuotes = await this.getOutOfTheMoneyPutQuotes(underlying, nearContract);
 
     return farQuotes.map((farQuote) => {
       const nearQuote = nearQuotes.find(
@@ -96,37 +92,92 @@ export class OptionsController {
         nearMidPrice = (nearBuyPrice + nearSellPrice) / 2;
       }
 
+      let farBuyPrice;
+      let farSellPrice;
+      let farMidPrice;
+      if (nearQuote) {
+        farBuyPrice = farQuote.buyPrice;
+        farSellPrice = farQuote.sellPrice;
+        farMidPrice = (farBuyPrice + farSellPrice) / 2;
+      }
+
+      const timeSpan = farQuote.expireDays - nearQuote.expireDays;
+
+      const moveSellYield = this.yieldFunc(
+        farSellPrice - nearMidPrice,
+        timeSpan,
+        farQuote.executionPrice - valuation,
+      );
+      const moveSellDescription = `farSellPrice ${farSellPrice} - nearMidPrice ${nearMidPrice}: ${moveSellYield}`;
+
+      const moveBuyYield = this.yieldFunc(
+        farBuyPrice - nearMidPrice,
+        timeSpan,
+        farQuote.executionPrice - valuation,
+      );
+      const moveBuyDescription = `farBuyPrice ${farBuyPrice} - nearMidPrice ${nearMidPrice}: ${moveBuyYield}`;
+
       return {
         executionPrice: farQuote.executionPrice,
         expireDays: farQuote.expireDays,
         sellYield: this.yieldFunc(
           farQuote.sellPrice,
           farQuote.expireDays,
-          farQuote.executionPrice - 2000,
+          farQuote.executionPrice / 2,
         ),
         buyYield: this.yieldFunc(
           farQuote.buyPrice,
           farQuote.expireDays,
-          farQuote.executionPrice - 2000,
+          farQuote.executionPrice / 2,
         ),
-        sellPrice: farQuote.sellPrice,
+        sellPrice: farSellPrice,
+        buyPrice: farBuyPrice,
+        midPrice: farMidPrice,
         nearBuyPrice: nearBuyPrice,
         nearSellPrice: nearSellPrice,
         nearMidPrice: nearMidPrice,
-        nearExpire: nearQuote.expireDays,
-        timeSpan: farQuote.expireDays - nearQuote.expireDays,
-        base: farQuote.executionPrice - 2000,
-        moveSellYield: this.yieldFunc(
-          farQuote.sellPrice - nearMidPrice,
-          farQuote.expireDays - nearQuote.expireDays,
-          farQuote.executionPrice - 2000,
-        ),
-        moveBuyYield: this.yieldFunc(
-          farQuote.buyPrice - nearMidPrice,
-          farQuote.expireDays - nearQuote.expireDays,
-          farQuote.executionPrice - 2000,
-        ),
+        timeSpan: timeSpan,
+        base: farQuote.executionPrice - valuation,
+        moveSellYield: moveSellYield,
+        moveSellDescription: moveSellDescription,
+        moveBuyYield: moveBuyYield,
+        moveBuyDescription: moveBuyDescription,
       };
+    });
+  }
+
+  async getSpreadYield(underlying: string, contract: string, spread: number) {
+    const quotes = await this.getOutOfTheMoneyPutQuotes(underlying, contract);
+    quotes.sort((a, b) => a.executionPrice - b.executionPrice);
+
+    return quotes.map((quote, i, arr) => {
+      const higherIndex = i + 1;
+      if (arr[higherIndex]) {
+        const higher = arr[higherIndex];
+
+        return {
+          executionPrice: quote.executionPrice,
+          higherExecutionPrice: higher.executionPrice,
+          description: `Sell ${higher.executionPrice}, buy ${quote.executionPrice}`,
+          expireDays: quote.expireDays,
+          leastYield: this.yieldFunc(
+            higher.buyPrice - quote.sellPrice,
+            quote.expireDays,
+            higher.executionPrice - quote.executionPrice,
+          ),
+          midYield: this.yieldFunc(
+            (higher.sellPrice + higher.buyPrice) / 2 - (quote.sellPrice + quote.buyPrice) / 2,
+            quote.expireDays,
+            higher.executionPrice - quote.executionPrice,
+          ),
+          midGain:
+            (higher.sellPrice + higher.buyPrice) / 2 - (quote.sellPrice + quote.buyPrice) / 2,
+          base: higher.executionPrice - quote.executionPrice,
+          winLossRatio:
+            (higher.executionPrice - quote.executionPrice) /
+            ((higher.sellPrice + higher.buyPrice) / 2 - (quote.sellPrice + quote.buyPrice) / 2),
+        };
+      }
     });
   }
 }

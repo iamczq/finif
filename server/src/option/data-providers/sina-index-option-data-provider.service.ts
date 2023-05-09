@@ -7,10 +7,7 @@ import { Calendar } from '../../util/calendar';
 
 @Injectable()
 export class SinaIndexOptionDataProviderService {
-  async getQuote(
-    underlying: string,
-    contractMonth: string,
-  ): Promise<OptionQuoteDto[]> {
+  async getQuote(underlying: string, contractMonth: string): Promise<OptionQuoteDto[]> {
     const contract = `${underlying}${contractMonth}`;
     const req = await fetch(
       `https://stock.finance.sina.com.cn/futures/api/openapi.php/OptionService.getOptionData?type=futures&product=${underlying}&exchange=cffex&pinzhong=${contract}`,
@@ -19,8 +16,7 @@ export class SinaIndexOptionDataProviderService {
           accept:
             'text/javascript, application/javascript, application/ecmascript, application/x-ecmascript, */*; q=0.01',
           'accept-language': 'en-US,en;q=0.9',
-          'sec-ch-ua':
-            '"Google Chrome";v="89", "Chromium";v="89", ";Not A Brand";v="99"',
+          'sec-ch-ua': '"Google Chrome";v="89", "Chromium";v="89", ";Not A Brand";v="99"',
           'sec-ch-ua-mobile': '?0',
           'sec-fetch-dest': 'empty',
           'sec-fetch-mode': 'cors',
