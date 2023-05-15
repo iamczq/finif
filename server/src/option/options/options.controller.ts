@@ -83,6 +83,10 @@ export class OptionsController {
       const nearQuote = nearQuotes.find(
         (nearQuote) => nearQuote.executionPrice === farQuote.executionPrice,
       );
+      if (!nearQuote) {
+        return;
+      }
+
       let nearBuyPrice;
       let nearSellPrice;
       let nearMidPrice;

@@ -9,8 +9,30 @@ import { Calendar } from '../../util/calendar';
 export class SinaIndexOptionDataProviderService {
   async getQuote(underlying: string, contractMonth: string): Promise<OptionQuoteDto[]> {
     const contract = `${underlying}${contractMonth}`;
+
+    let index, exchange, product;
+    if (underlying === 'io') {
+      index = 'sh000300';
+      exchange = 'cffex';
+      product = 'io';
+    } else if (underlying === 'ho') {
+      index = 'sh000016';
+      exchange = 'cffex';
+      product = 'ho';
+    } else if (underlying === 'mo') {
+      index = 'sh000852';
+      exchange = 'cffex';
+      product = 'mo';
+    } else if (underlying === 'au') {
+      index = 'nf_AU0';
+      exchange = 'shfe';
+      product = 'au_o';
+    } else {
+      throw new Error(`Underlying ${underlying} is not supported.`);
+    }
+
     const req = await fetch(
-      `https://stock.finance.sina.com.cn/futures/api/openapi.php/OptionService.getOptionData?type=futures&product=${underlying}&exchange=cffex&pinzhong=${contract}`,
+      `https://stock.finance.sina.com.cn/futures/api/openapi.php/OptionService.getOptionData?type=futures&product=${product}&exchange=${exchange}&pinzhong=${contract}`,
       {
         headers: {
           accept:
@@ -30,16 +52,6 @@ export class SinaIndexOptionDataProviderService {
       },
     );
 
-    let index;
-    if (underlying === 'io') {
-      index = 'sh000300';
-    } else if (underlying === 'ho') {
-      index = 'sh000016';
-    } else if (underlying === 'mo') {
-      index = 'sh000852';
-    } else {
-      throw new Error(`Underlying ${underlying} is not supported.`);
-    }
     const indexReq = await fetch(`https://hq.sinajs.cn/list=${index}`, {
       headers: {
         accept: '*/*',
