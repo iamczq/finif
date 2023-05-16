@@ -1,0 +1,28 @@
+<div>
+  <label for="underlying">Underlying: </label>
+  <input id="underlying" [(ngModel)]="underlying" placeholder="underlying" />
+</div>
+<div>
+  <label for="farMonth">Far month: </label>
+  <input id="farMonth" [(ngModel)]="farMonth" placeholder="farMonth" />
+</div>
+<div>
+  <label for="nearMonth">Near month: </label>
+  <input id="nearMonth" [(ngModel)]="nearMonth" placeholder="nearMonth" />
+</div>
+<div>
+  <label for="valuation">Valuation: </label>
+  <input id="valuation" [(ngModel)]="valuation" placeholder="valuation" />
+</div>
+<button type="button" (click)="refresh()">Refresh</button>
+<label>{{isRefreshing ? 'Loading': 'ready'}}</label>
+<ul>
+  <li *ngFor="let yield of yields">
+    <label>{{ yield.executionPrice }} - {{yield.timeSpan}} Days</label>
+    <br />
+    <label>{{ yield.moveBuyDescription }}</label>
+    <br />
+    <label>{{ yield.moveSellDescription }}</label>
+    <br />
+  </li>
+</ul>
