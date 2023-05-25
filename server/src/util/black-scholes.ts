@@ -1,27 +1,14 @@
 export class blackScholes {
-  getPremium(
-    right: string,
-    S: number,
-    X: number,
-    t: number,
-    r: number,
-    v: number,
-  ) {
+  getPremium(right: string, S: number, X: number, t: number, r: number, v: number) {
     t = t / 365;
 
-    const d1 =
-      (Math.log(S / X) + (r + Math.pow(v, 2) / 2) * t) / (v * Math.sqrt(t));
+    const d1 = (Math.log(S / X) + (r + Math.pow(v, 2) / 2) * t) / (v * Math.sqrt(t));
     const d2 = d1 - v * Math.sqrt(t);
 
     if (right.toUpperCase().indexOf('C') !== -1) {
-      return (
-        S * this.getNormDist(d1) - X * Math.exp(-(r * t)) * this.getNormDist(d2)
-      );
+      return S * this.getNormDist(d1) - X * Math.exp(-(r * t)) * this.getNormDist(d2);
     } else if (right.toUpperCase().indexOf('P') !== -1) {
-      return (
-        X * Math.exp(-(r * t)) * this.getNormDist(-d2) -
-        S * this.getNormDist(-d1)
-      );
+      return X * Math.exp(-(r * t)) * this.getNormDist(-d2) - S * this.getNormDist(-d1);
     }
 
     return 0;
@@ -53,18 +40,10 @@ export class blackScholes {
     return volatility;
   }
 
-  getDelta(
-    right: 'C' | 'P',
-    S: number,
-    X: number,
-    t: number,
-    r: number,
-    v: number,
-  ) {
+  getDelta(right: 'C' | 'P', S: number, X: number, t: number, r: number, v: number) {
     t = t / 365;
 
-    const d1 =
-      (Math.log(S / X) + (r + Math.pow(v, 2) / 2) * t) / (v * Math.sqrt(t));
+    const d1 = (Math.log(S / X) + (r + Math.pow(v, 2) / 2) * t) / (v * Math.sqrt(t));
 
     if (right.toUpperCase().indexOf('C') !== -1) {
       return this.getNormDist(d1);
@@ -78,55 +57,34 @@ export class blackScholes {
   getGamma(S: number, X: number, t: number, r: number, v: number) {
     t = t / 365;
 
-    const d1 =
-      (Math.log(S / X) + (r + Math.pow(v, 2) / 2) * t) / (v * Math.sqrt(t));
+    const d1 = (Math.log(S / X) + (r + Math.pow(v, 2) / 2) * t) / (v * Math.sqrt(t));
 
-    return (
-      Math.exp(-Math.pow(d1, 2) / 2) /
-      Math.sqrt(2 * Math.PI) /
-      (S * v * Math.sqrt(t))
-    );
+    return Math.exp(-Math.pow(d1, 2) / 2) / Math.sqrt(2 * Math.PI) / (S * v * Math.sqrt(t));
   }
 
   getVega(S: number, X: number, t: number, r: number, v: number) {
     t = t / 365;
 
-    const d1 =
-      (Math.log(S / X) + (r + Math.pow(v, 2) / 2) * t) / (v * Math.sqrt(t));
+    const d1 = (Math.log(S / X) + (r + Math.pow(v, 2) / 2) * t) / (v * Math.sqrt(t));
 
-    return (
-      (S *
-        Math.sqrt(t) *
-        (Math.exp(-Math.pow(d1, 2) / 2) / Math.sqrt(2 * Math.PI))) /
-      100
-    );
+    return (S * Math.sqrt(t) * (Math.exp(-Math.pow(d1, 2) / 2) / Math.sqrt(2 * Math.PI))) / 100;
   }
 
-  getTheta(
-    right: string,
-    S: number,
-    X: number,
-    t: number,
-    r: number,
-    v: number,
-  ) {
+  getTheta(right: string, S: number, X: number, t: number, r: number, v: number) {
     t = t / 365;
 
-    const d1 =
-      (Math.log(S / X) + (r + Math.pow(v, 2) / 2) * t) / (v * Math.sqrt(t));
+    const d1 = (Math.log(S / X) + (r + Math.pow(v, 2) / 2) * t) / (v * Math.sqrt(t));
     const d2 = d1 - v * Math.sqrt(t);
 
     if (right.toUpperCase().indexOf('C') !== -1) {
       return (
-        (-(S * (Math.exp(-Math.pow(d1, 2) / 2) / Math.sqrt(2 * Math.PI)) * v) /
-          (2 * Math.sqrt(t)) -
+        (-(S * (Math.exp(-Math.pow(d1, 2) / 2) / Math.sqrt(2 * Math.PI)) * v) / (2 * Math.sqrt(t)) -
           r * X * Math.exp(-(r * t)) * this.getNormDist(d2)) /
         365
       );
     } else if (right.toUpperCase().indexOf('P') !== -1) {
       return (
-        (-(S * (Math.exp(-Math.pow(d1, 2) / 2) / Math.sqrt(2 * Math.PI)) * v) /
-          (2 * Math.sqrt(t)) +
+        (-(S * (Math.exp(-Math.pow(d1, 2) / 2) / Math.sqrt(2 * Math.PI)) * v) / (2 * Math.sqrt(t)) +
           r * X * Math.exp(-(r * t)) * this.getNormDist(-d2)) /
         365
       );
@@ -138,8 +96,7 @@ export class blackScholes {
   getRho(right: string, S: number, X: number, t: number, r: number, v: number) {
     t = t / 365;
 
-    const d1 =
-      (Math.log(S / X) + (r + Math.pow(v, 2) / 2) * t) / (v * Math.sqrt(t));
+    const d1 = (Math.log(S / X) + (r + Math.pow(v, 2) / 2) * t) / (v * Math.sqrt(t));
     const d2 = d1 - v * Math.sqrt(t);
 
     if (right.toUpperCase().indexOf('C') !== -1) {

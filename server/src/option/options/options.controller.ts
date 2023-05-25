@@ -1,6 +1,7 @@
 import { Controller, Get, Param, Query } from '@nestjs/common';
 import { OptionsService } from './options.service';
 import { OptionQuoteDto } from '../dto/option-quote.dto';
+import { OptionYieldDto } from '../dto/option-yield.dto';
 
 @Controller('options')
 export class OptionsController {
@@ -21,48 +22,74 @@ export class OptionsController {
     @Query('nearContract') nearContract: string,
     @Query('valuation') valuation: number,
     @Query('spread') spread: number,
-  ) {
+  ): Promise<OptionYieldDto[]> {
     if (nearContract) {
-      return this.getDoubleContractYield(underlying, contract, nearContract, valuation);
+      return this.getDoubleContractYields(underlying, contract, nearContract, valuation);
     } else if (spread > 0) {
-      return this.getSpreadYield(underlying, contract, spread);
+      return this.getSpreadYields(underlying, contract, spread);
     } else {
-      return this.getSingleContractYield(underlying, contract, valuation);
+      return this.getSingleContractYields(underlying, contract, valuation);
     }
   }
 
-  private yieldFunc(amount: number, timeSpan: number, base: number) {
-    const rate = ((amount / timeSpan) * 365) / base;
-    return (rate * 100).toFixed(4) + '%';
+  private yieldFunc(amount: number, timeSpan: number, base: number): number {
+    return ((amount / timeSpan) * 365) / base;
   }
 
-  private async getSingleContractYield(underlying: string, contract: string, valuation: number) {
+  private yieldToString(rate: number): string {
+    return (rate * 100).toFixed(2) + '%';
+  }
+
+  private async getSingleContractYields(
+    underlying: string,
+    contract: string,
+    valuation: number,
+  ): Promise<OptionYieldDto[]> {
     const quotes = await this.getOutOfTheMoneyPutQuotes(underlying, contract);
 
-    return quotes.map((quote) => {
-      const maxYield = this.yieldFunc(
-        quote.sellPrice,
-        quote.expireDays,
-        quote.executionPrice - valuation,
-      );
+    const yields = quotes.map((quote) => {
+      const executionPrice = quote.executionPrice;
+      const margin = quote.executionPrice - valuation;
+      const duration = quote.expireDays;
+      const description = '';
 
-      const minYield = this.yieldFunc(
-        quote.buyPrice,
-        quote.expireDays,
-        quote.executionPrice - valuation,
-      );
+      const minIncome = quote.buyPrice;
+      const maxIncome = quote.sellPrice;
+      const midIncome = (minIncome + maxIncome) / 2;
+
+      const minYield = this.yieldFunc(minIncome, duration, margin);
+      const minDescription = `Sell at ${minIncome}. ` + `Yield: ${this.yieldToString(minYield)}.`;
+
+      const midYield = this.yieldFunc(midIncome, duration, margin);
+      const midDescription = `Sell at ${midIncome}. ` + `Yield: ${this.yieldToString(midYield)}.`;
+
+      const maxYield = this.yieldFunc(maxIncome, duration, margin);
+      const maxDescription = `Sell at ${maxIncome}. ` + `Yield: ${this.yieldToString(maxYield)}.`;
 
       return {
-        executionPrice: quote.executionPrice,
-        expireDays: quote.expireDays,
-        sellYield: maxYield,
-        buyYield: minYield,
-        sellPrice: quote.sellPrice,
-        base: quote.executionPrice - 2000,
+        description: description,
+        executionPrice: executionPrice,
+        margin: margin,
+        duration: duration,
+        minIncome: minIncome,
+        minExpense: 0,
+        minYield: minYield,
+        minDescription: minDescription,
+        midIncome: midIncome,
+        midExpense: 0,
+        midYield: midYield,
+        midDescription: midDescription,
+        maxIncome: maxIncome,
+        maxExpense: 0,
+        maxYield: maxYield,
+        maxDescription: maxDescription,
       };
     });
+
+    return yields;
   }
 
+  // todo
   private async getOutOfTheMoneyPutQuotes(underlying: string, contract: string) {
     const quotes = await this.optionService.getQuote(underlying, contract);
     const underlyingPrice = quotes[0].underlyingPrice;
@@ -70,116 +97,154 @@ export class OptionsController {
     return putQuotes;
   }
 
-  private async getDoubleContractYield(
+  private async getDoubleContractYields(
     underlying: string,
     contract: string,
     nearContract: string,
     valuation: number,
-  ) {
+  ): Promise<OptionYieldDto[]> {
     const farQuotes = await this.getOutOfTheMoneyPutQuotes(underlying, contract);
     const nearQuotes = await this.getOutOfTheMoneyPutQuotes(underlying, nearContract);
 
-    return farQuotes.map((farQuote) => {
+    const yields = farQuotes.map((farQuote) => {
       const nearQuote = nearQuotes.find(
         (nearQuote) => nearQuote.executionPrice === farQuote.executionPrice,
       );
       if (!nearQuote) {
-        return;
+        return null;
       }
 
-      let nearBuyPrice;
-      let nearSellPrice;
-      let nearMidPrice;
-      if (nearQuote) {
-        nearBuyPrice = nearQuote.buyPrice;
-        nearSellPrice = nearQuote.sellPrice;
-        nearMidPrice = (nearBuyPrice + nearSellPrice) / 2;
-      }
-
-      let farBuyPrice;
-      let farSellPrice;
-      let farMidPrice;
-      if (nearQuote) {
-        farBuyPrice = farQuote.buyPrice;
-        farSellPrice = farQuote.sellPrice;
-        farMidPrice = (farBuyPrice + farSellPrice) / 2;
-      }
-
-      const timeSpan = farQuote.expireDays - nearQuote.expireDays;
-
-      const moveSellYield = this.yieldFunc(
-        farSellPrice - nearMidPrice,
-        timeSpan,
-        farQuote.executionPrice - valuation,
-      );
-      const moveSellDescription = `farSellPrice ${farSellPrice} - nearMidPrice ${nearMidPrice}: ${moveSellYield}`;
-
-      const moveBuyYield = this.yieldFunc(
-        farBuyPrice - nearMidPrice,
-        timeSpan,
-        farQuote.executionPrice - valuation,
-      );
-      const moveBuyDescription = `farBuyPrice ${farBuyPrice} - nearMidPrice ${nearMidPrice}: ${moveBuyYield}`;
-
-      return {
-        executionPrice: farQuote.executionPrice,
-        expireDays: farQuote.expireDays,
-        sellYield: this.yieldFunc(
-          farQuote.sellPrice,
-          farQuote.expireDays,
-          farQuote.executionPrice / 2,
-        ),
-        buyYield: this.yieldFunc(
-          farQuote.buyPrice,
-          farQuote.expireDays,
-          farQuote.executionPrice / 2,
-        ),
-        sellPrice: farSellPrice,
-        buyPrice: farBuyPrice,
-        midPrice: farMidPrice,
-        nearBuyPrice: nearBuyPrice,
-        nearSellPrice: nearSellPrice,
-        nearMidPrice: nearMidPrice,
-        timeSpan: timeSpan,
-        base: farQuote.executionPrice - valuation,
-        moveSellYield: moveSellYield,
-        moveSellDescription: moveSellDescription,
-        moveBuyYield: moveBuyYield,
-        moveBuyDescription: moveBuyDescription,
-      };
+      return this.getDoubleContractYield(farQuote, nearQuote, valuation);
     });
+
+    return yields.filter((obj) => obj !== null);
   }
 
-  async getSpreadYield(underlying: string, contract: string, spread: number) {
+  private getDoubleContractYield(
+    far: OptionQuoteDto,
+    near: OptionQuoteDto,
+    valuation: number,
+  ): OptionYieldDto {
+    const executionPrice = far.executionPrice;
+    const margin = far.executionPrice - valuation;
+    const duration = far.expireDays - near.expireDays;
+    const description = '';
+
+    // max and min here mean "To get min/max return, how much I would pay".
+    let maxExpense;
+    let minExpense;
+    let midExpense;
+    if (near) {
+      maxExpense = near.buyPrice;
+      minExpense = near.sellPrice;
+      midExpense = (maxExpense + minExpense) / 2;
+    }
+
+    let minIncome;
+    let maxIncome;
+    let midIncome;
+    if (far) {
+      minIncome = far.buyPrice;
+      maxIncome = far.sellPrice;
+      midIncome = (minIncome + maxIncome) / 2;
+    }
+
+    const minYield = this.yieldFunc(minIncome - minExpense, duration, margin);
+    const minDescription =
+      `Sell at ${minIncome}, ` +
+      `Move at ${minExpense}. ` +
+      `Yield: ${this.yieldToString(minYield)}.`;
+
+    const midYield = this.yieldFunc(midIncome - midExpense, duration, margin);
+    const midDescription =
+      `Sell between ${minIncome} and ${maxIncome}, ` +
+      `Move between ${maxExpense} and ${minExpense}. ` +
+      `Yield: ${this.yieldToString(midYield)}.`;
+
+    const maxYield = this.yieldFunc(maxIncome - maxExpense, duration, margin);
+    const maxDescription =
+      `Sell at ${maxIncome}, ` +
+      `Move at ${maxExpense}. ` +
+      `Yield: ${this.yieldToString(maxYield)}.`;
+
+    return {
+      description: description,
+      executionPrice: executionPrice,
+      margin: margin,
+      duration: duration,
+      minIncome: minIncome,
+      minExpense: minExpense,
+      minYield: minYield,
+      minDescription: minDescription,
+      midIncome: midIncome,
+      midExpense: midExpense,
+      midYield: midYield,
+      midDescription: midDescription,
+      maxIncome: maxIncome,
+      maxExpense: maxExpense,
+      maxYield: maxYield,
+      maxDescription: maxDescription,
+    };
+  }
+
+  async getSpreadYields(underlying: string, contract: string, spread: number) {
     const quotes = await this.getOutOfTheMoneyPutQuotes(underlying, contract);
     quotes.sort((a, b) => a.executionPrice - b.executionPrice);
 
-    return quotes.map((quote, i, arr) => {
+    return quotes.map((lower, i, arr) => {
       const higherIndex = i + 1;
       if (arr[higherIndex]) {
         const higher = arr[higherIndex];
+        const executionPrice = lower.executionPrice;
+        const higherExecutionPrice = higher.executionPrice;
+        const margin = higherExecutionPrice - executionPrice;
+        const duration = lower.expireDays;
+        const description = `Sell ${higherExecutionPrice}, buy ${executionPrice}`;
+
+        const minIncome = higher.buyPrice;
+        const minExpense = lower.sellPrice;
+        const minYield = this.yieldFunc(minIncome - minExpense, duration, margin);
+        const minDescription =
+          `Sell at ${minIncome}, ` +
+          `Move at ${minExpense}. ` +
+          `Yield: ${this.yieldToString(minYield)}.`;
+
+        const maxIncome = higher.sellPrice;
+        const maxExpense = lower.buyPrice;
+        const maxYield = this.yieldFunc(maxIncome - maxExpense, duration, margin);
+        const maxDescription =
+          `Sell at ${maxIncome}, ` +
+          `Move at ${maxExpense}. ` +
+          `Yield: ${this.yieldToString(maxYield)}.`;
+
+        const midIncome = (maxIncome + minIncome) / 2;
+        const midExpense = (maxExpense + minExpense) / 2;
+        const midYield = this.yieldFunc(midIncome - midExpense, duration, margin);
+        const midDescription =
+          `Sell between ${minIncome} and ${maxIncome}, ` +
+          `Move between ${maxExpense} and ${minExpense}. ` +
+          `Yield: ${this.yieldToString(midYield)}.`;
 
         return {
-          executionPrice: quote.executionPrice,
-          higherExecutionPrice: higher.executionPrice,
-          description: `Sell ${higher.executionPrice}, buy ${quote.executionPrice}`,
-          expireDays: quote.expireDays,
-          leastYield: this.yieldFunc(
-            higher.buyPrice - quote.sellPrice,
-            quote.expireDays,
-            higher.executionPrice - quote.executionPrice,
-          ),
-          midYield: this.yieldFunc(
-            (higher.sellPrice + higher.buyPrice) / 2 - (quote.sellPrice + quote.buyPrice) / 2,
-            quote.expireDays,
-            higher.executionPrice - quote.executionPrice,
-          ),
-          midGain:
-            (higher.sellPrice + higher.buyPrice) / 2 - (quote.sellPrice + quote.buyPrice) / 2,
-          base: higher.executionPrice - quote.executionPrice,
-          winLossRatio:
-            (higher.executionPrice - quote.executionPrice) /
-            ((higher.sellPrice + higher.buyPrice) / 2 - (quote.sellPrice + quote.buyPrice) / 2),
+          description: description,
+          executionPrice: executionPrice,
+          margin: margin,
+          duration: duration,
+          minIncome: minIncome,
+          minExpense: minExpense,
+          minYield: minYield,
+          minDescription: minDescription,
+          midIncome: midIncome,
+          midExpense: midExpense,
+          midYield: midYield,
+          midDescription: midDescription,
+          maxIncome: maxIncome,
+          maxExpense: maxExpense,
+          maxYield: maxYield,
+          maxDescription: maxDescription,
+          extra: {
+            winLossRatio: margin / (midIncome - midExpense),
+          },
         };
       }
     });
