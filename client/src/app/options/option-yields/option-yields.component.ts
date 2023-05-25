@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { filter, map } from 'rxjs';
+import { OptionYieldDto } from 'src/app/dtos/option-yield.dto';
 import { OptionQuotesService } from 'src/app/services/option-quotes.service';
 
 @Component({
@@ -12,7 +13,7 @@ export class OptionYieldsComponent implements OnInit {
   farMonth = '2403';
   nearMonth = '2312';
   valuation = '2000';
-  yields: any = [];
+  yields: OptionYieldDto[] = [];
   isRefreshing = false;
 
   constructor(private optionQuoteService: OptionQuotesService) {}
@@ -23,9 +24,9 @@ export class OptionYieldsComponent implements OnInit {
     this.isRefreshing = true;
     this.optionQuoteService
       .getYields(this.underlying, this.farMonth, this.nearMonth, this.valuation)
-      .pipe(map((ret) => (ret as Array<any>).filter((obj) => obj != null)))
+      .pipe(map((ret) => ret.filter((obj) => obj != null)))
       .subscribe((value) => {
-        this.yields = value as any;
+        this.yields = value;
         this.isRefreshing = false;
       });
   }

@@ -51,7 +51,7 @@ export class OptionsController {
       const executionPrice = quote.executionPrice;
       const margin = quote.executionPrice - valuation;
       const duration = quote.expireDays;
-      const description = '';
+      const description = `${executionPrice} - ${duration} days with margin ${margin}`;
 
       const minIncome = quote.buyPrice;
       const maxIncome = quote.sellPrice;
@@ -128,7 +128,7 @@ export class OptionsController {
     const executionPrice = far.executionPrice;
     const margin = far.executionPrice - valuation;
     const duration = far.expireDays - near.expireDays;
-    const description = '';
+    const description = `${executionPrice} - ${duration} days with margin ${margin}`;
 
     // max and min here mean "To get min/max return, how much I would pay".
     let maxExpense;
@@ -199,7 +199,9 @@ export class OptionsController {
         const higherExecutionPrice = higher.executionPrice;
         const margin = higherExecutionPrice - executionPrice;
         const duration = lower.expireDays;
-        const description = `Sell ${higherExecutionPrice}, buy ${executionPrice}`;
+        const description =
+          `Sell ${higherExecutionPrice}, buy ${executionPrice}` +
+          ` - ${duration} days with margin ${margin}`;
 
         const minIncome = higher.buyPrice;
         const minExpense = lower.sellPrice;

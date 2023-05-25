@@ -14,15 +14,17 @@
   <label for="valuation">Valuation: </label>
   <input id="valuation" [(ngModel)]="valuation" placeholder="valuation" />
 </div>
-<button type="button" (click)="refresh()">Refresh</button>
-<label>{{isRefreshing ? 'Loading': 'ready'}}</label>
+<button type="button" (click)="refresh()" [disabled]="isRefreshing">Refresh</button>
+<label>{{ isRefreshing ? "Loading" : "ready" }}</label>
 <ul>
-  <li *ngFor="let yield of yields">
-    <label>{{ yield.executionPrice }} - {{yield.timeSpan}} Days</label>
+  <li *ngFor="let yield of this.yields">
+    <label>{{ yield.description }}</label>
     <br />
-    <label>{{ yield.moveBuyDescription }}</label>
+    <label>{{ yield.minDescription }}</label>
     <br />
-    <label>{{ yield.moveSellDescription }}</label>
-    <br />
+    <label>{{ yield.midDescription }}</label
+    ><br />
+    <label>{{ yield.maxDescription }}</label
+    ><br />
   </li>
 </ul>
