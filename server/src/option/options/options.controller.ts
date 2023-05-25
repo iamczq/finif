@@ -111,13 +111,13 @@ export class OptionsController {
         (nearQuote) => nearQuote.executionPrice === farQuote.executionPrice,
       );
       if (!nearQuote) {
-        return null;
+        return new OptionYieldDto();
       }
 
       return this.getDoubleContractYield(farQuote, nearQuote, valuation);
     });
 
-    return yields.filter((obj) => obj !== null);
+    return yields.filter((y) => y.executionPrice > 0);
   }
 
   private getDoubleContractYield(
@@ -187,11 +187,15 @@ export class OptionsController {
     };
   }
 
-  async getSpreadYields(underlying: string, contract: string, spread: number) {
+  async getSpreadYields(
+    underlying: string,
+    contract: string,
+    spread: number,
+  ): Promise<OptionYieldDto[]> {
     const quotes = await this.getOutOfTheMoneyPutQuotes(underlying, contract);
     quotes.sort((a, b) => a.executionPrice - b.executionPrice);
 
-    return quotes.map((lower, i, arr) => {
+    const yields = quotes.map((lower, i, arr) => {
       const higherIndex = i + 1;
       if (arr[higherIndex]) {
         const higher = arr[higherIndex];
@@ -249,6 +253,10 @@ export class OptionsController {
           },
         };
       }
+
+      return new OptionYieldDto();
     });
+
+    return yields.filter((y) => y.executionPrice > 0);
   }
 }
