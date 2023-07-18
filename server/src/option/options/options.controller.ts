@@ -48,6 +48,10 @@ export class OptionsController {
     return (rate * 100).toFixed(2) + '%';
   }
 
+  private thetaToString(theta: number): string {
+    return theta.toFixed(6) + '$';
+  }
+
   private async getSingleContractYields(
     underlying: string,
     contract: string,
@@ -70,15 +74,21 @@ export class OptionsController {
 
       const minYield = this.yieldFunc(minIncome, duration, margin);
       const minDescription =
-        `Sell at ${minIncome}. ` + `Yield: ${this.yieldToString(minYield)}. ` + `θ: ${minTheta}`;
+        `Sell at ${minIncome}. ` +
+        `Yield: ${this.yieldToString(minYield)}. ` +
+        `θ: ${this.thetaToString(minTheta)}`;
 
       const midYield = this.yieldFunc(midIncome, duration, margin);
       const midDescription =
-        `Sell at ${midIncome}. ` + `Yield: ${this.yieldToString(midYield)}. ` + `θ: ${midTheta}`;
+        `Sell at ${midIncome}. ` +
+        `Yield: ${this.yieldToString(midYield)}. ` +
+        `θ: ${this.thetaToString(midTheta)}`;
 
       const maxYield = this.yieldFunc(maxIncome, duration, margin);
       const maxDescription =
-        `Sell at ${maxIncome}. ` + `Yield: ${this.yieldToString(maxYield)}. ` + `θ: ${maxTheta}`;
+        `Sell at ${maxIncome}. ` +
+        `Yield: ${this.yieldToString(maxYield)}. ` +
+        `θ: ${this.thetaToString(maxTheta)}`;
 
       return {
         description: description,
@@ -181,20 +191,20 @@ export class OptionsController {
 
     const minYield = this.yieldFunc(minIncome - minExpense, duration, margin);
     const minDescription =
-      `Sell at ${minIncome}, θ ${minIncomeTheta}` +
-      `Move at ${minExpense}, θ ${minExpenseTheta}. ` +
+      `Sell at ${minIncome}, θ: ${this.thetaToString(minIncomeTheta)}. ` +
+      `Move at ${minExpense}, θ: ${this.thetaToString(minExpenseTheta)}. ` +
       `Yield: ${this.yieldToString(minYield)}.`;
 
     const midYield = this.yieldFunc(midIncome - midExpense, duration, margin);
     const midDescription =
-      `Sell between ${minIncome} and ${maxIncome}, θ ${midIncomeTheta}` +
-      `Move between ${maxExpense} and ${minExpense}, θ ${midExpenseTheta}. ` +
+      `Sell between ${minIncome} and ${maxIncome}, θ: ${this.thetaToString(midIncomeTheta)}. ` +
+      `Move between ${maxExpense} and ${minExpense}, θ: ${this.thetaToString(midExpenseTheta)}. ` +
       `Yield: ${this.yieldToString(midYield)}.`;
 
     const maxYield = this.yieldFunc(maxIncome - maxExpense, duration, margin);
     const maxDescription =
-      `Sell at ${maxIncome}, θ ${maxIncomeTheta}` +
-      `Move at ${maxExpense}, θ ${maxExpenseTheta}. ` +
+      `Sell at ${maxIncome}, θ: ${this.thetaToString(maxIncomeTheta)}. ` +
+      `Move at ${maxExpense}, θ: ${this.thetaToString(maxExpenseTheta)}. ` +
       `Yield: ${this.yieldToString(maxYield)}.`;
 
     return {
