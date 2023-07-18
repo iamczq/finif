@@ -1,4 +1,11 @@
-import { Controller, Get, Param, Query } from '@nestjs/common';
+import {
+  ClassSerializerInterceptor,
+  Controller,
+  Get,
+  Param,
+  Query,
+  UseInterceptors,
+} from '@nestjs/common';
 import { OptionsService } from './options.service';
 import { OptionQuoteDto } from '../dto/option-quote.dto';
 import { OptionYieldDto } from '../dto/option-yield.dto';
@@ -7,6 +14,7 @@ import { OptionYieldDto } from '../dto/option-yield.dto';
 export class OptionsController {
   constructor(private readonly optionService: OptionsService) {}
 
+  @UseInterceptors(ClassSerializerInterceptor)
   @Get(':id/:contract')
   public async getQuote(
     @Param('id') id: string,
@@ -56,15 +64,21 @@ export class OptionsController {
       const minIncome = quote.buyPrice;
       const maxIncome = quote.sellPrice;
       const midIncome = (minIncome + maxIncome) / 2;
+      const minTheta = quote.buyPriceRisk.theta;
+      const maxTheta = quote.sellPriceRisk.theta;
+      const midTheta = (minTheta + maxTheta) / 2;
 
       const minYield = this.yieldFunc(minIncome, duration, margin);
-      const minDescription = `Sell at ${minIncome}. ` + `Yield: ${this.yieldToString(minYield)}.`;
+      const minDescription =
+        `Sell at ${minIncome}. ` + `Yield: ${this.yieldToString(minYield)}. ` + `θ: ${minTheta}`;
 
       const midYield = this.yieldFunc(midIncome, duration, margin);
-      const midDescription = `Sell at ${midIncome}. ` + `Yield: ${this.yieldToString(midYield)}.`;
+      const midDescription =
+        `Sell at ${midIncome}. ` + `Yield: ${this.yieldToString(midYield)}. ` + `θ: ${midTheta}`;
 
       const maxYield = this.yieldFunc(maxIncome, duration, margin);
-      const maxDescription = `Sell at ${maxIncome}. ` + `Yield: ${this.yieldToString(maxYield)}.`;
+      const maxDescription =
+        `Sell at ${maxIncome}. ` + `Yield: ${this.yieldToString(maxYield)}. ` + `θ: ${maxTheta}`;
 
       return {
         description: description,
@@ -83,6 +97,10 @@ export class OptionsController {
         maxExpense: 0,
         maxYield: maxYield,
         maxDescription: maxDescription,
+        extra: {
+          minTheta: minTheta,
+          maxTheta: maxTheta,
+        },
       };
     });
 
@@ -134,37 +152,49 @@ export class OptionsController {
     let maxExpense;
     let minExpense;
     let midExpense;
+    let maxExpenseTheta;
+    let minExpenseTheta;
+    let midExpenseTheta;
     if (near) {
       maxExpense = near.buyPrice;
       minExpense = near.sellPrice;
       midExpense = (maxExpense + minExpense) / 2;
+      maxExpenseTheta = near.buyPriceRisk.theta;
+      minExpenseTheta = near.sellPriceRisk.theta;
+      midExpenseTheta = (maxExpenseTheta + minExpenseTheta) / 2;
     }
 
     let minIncome;
     let maxIncome;
     let midIncome;
+    let minIncomeTheta;
+    let maxIncomeTheta;
+    let midIncomeTheta;
     if (far) {
       minIncome = far.buyPrice;
       maxIncome = far.sellPrice;
       midIncome = (minIncome + maxIncome) / 2;
+      minIncomeTheta = far.buyPriceRisk.theta;
+      maxIncomeTheta = far.sellPriceRisk.theta;
+      midIncomeTheta = (minIncomeTheta + maxIncomeTheta) / 2;
     }
 
     const minYield = this.yieldFunc(minIncome - minExpense, duration, margin);
     const minDescription =
-      `Sell at ${minIncome}, ` +
-      `Move at ${minExpense}. ` +
+      `Sell at ${minIncome}, θ ${minIncomeTheta}` +
+      `Move at ${minExpense}, θ ${minExpenseTheta}. ` +
       `Yield: ${this.yieldToString(minYield)}.`;
 
     const midYield = this.yieldFunc(midIncome - midExpense, duration, margin);
     const midDescription =
-      `Sell between ${minIncome} and ${maxIncome}, ` +
-      `Move between ${maxExpense} and ${minExpense}. ` +
+      `Sell between ${minIncome} and ${maxIncome}, θ ${midIncomeTheta}` +
+      `Move between ${maxExpense} and ${minExpense}, θ ${midExpenseTheta}. ` +
       `Yield: ${this.yieldToString(midYield)}.`;
 
     const maxYield = this.yieldFunc(maxIncome - maxExpense, duration, margin);
     const maxDescription =
-      `Sell at ${maxIncome}, ` +
-      `Move at ${maxExpense}. ` +
+      `Sell at ${maxIncome}, θ ${maxIncomeTheta}` +
+      `Move at ${maxExpense}, θ ${maxExpenseTheta}. ` +
       `Yield: ${this.yieldToString(maxYield)}.`;
 
     return {

@@ -25,6 +25,7 @@
     "@nestjs/core": "^9.0.0",
     "@nestjs/mongoose": "^9.2.2",
     "@nestjs/platform-express": "^9.0.0",
+    "class-transformer": "^0.5.1",
     "lodash": "^4.17.21",
     "moment": "^2.29.4",
     "mongoose": "^7.0.3",

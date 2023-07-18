@@ -1,3 +1,5 @@
+import { OptionRisk } from '../models/option-risk.model';
+
 export class OptionQuoteDto {
   readonly code: string;
   readonly month: string;
@@ -12,6 +14,9 @@ export class OptionQuoteDto {
   readonly changePercent: number;
   readonly underlyingPrice: number;
   readonly expireDays: number;
+  readonly risk: OptionRisk;
+  readonly buyPriceRisk: OptionRisk;
+  readonly sellPriceRisk: OptionRisk;
 
   constructor(initializer: {
     code: string;
@@ -41,5 +46,29 @@ export class OptionQuoteDto {
     this.changePercent = initializer.changePercent;
     this.underlyingPrice = initializer.underlyingPrice;
     this.expireDays = initializer.expireDays;
+
+    this.risk = new OptionRisk({
+      type: initializer.type,
+      price: initializer.price,
+      executionPrice: initializer.executionPrice,
+      underlyingPrice: initializer.underlyingPrice,
+      remainDays: initializer.expireDays,
+    });
+
+    this.buyPriceRisk = new OptionRisk({
+      type: initializer.type,
+      price: initializer.buyPrice,
+      executionPrice: initializer.executionPrice,
+      underlyingPrice: initializer.underlyingPrice,
+      remainDays: initializer.expireDays,
+    });
+
+    this.sellPriceRisk = new OptionRisk({
+      type: initializer.type,
+      price: initializer.sellPrice,
+      executionPrice: initializer.executionPrice,
+      underlyingPrice: initializer.underlyingPrice,
+      remainDays: initializer.expireDays,
+    });
   }
 }
