@@ -1,30 +1,40 @@
-<div>
-  <label for="underlying">Underlying: </label>
-  <input id="underlying" [(ngModel)]="underlying" placeholder="underlying" />
+<div class="container">
+  <div>
+    <label for="underlying" class="form-label">Underlying</label>
+    <input id="underlying" [(ngModel)]="underlying" class="form-control" />
+  </div>
+  <div>
+    <label for="farMonth" class="form-label">Far month</label>
+    <select id="farMonth" [(ngModel)]="farMonth" class="form-select">
+      <option [value]="contract" *ngFor="let contract of this.contracts">
+        {{ contract }}
+      </option>
+    </select>
+  </div>
+  <div>
+    <label for="nearMonth" class="form-label">Near month</label>
+    <select id="nearMonth" [(ngModel)]="nearMonth" class="form-select">
+      <option [value]="contract" *ngFor="let contract of this.contracts">
+        {{ contract }}
+      </option>
+    </select>
+  </div>
+  <div>
+    <label for="valuation" class="form-label">Valuation</label>
+    <input id="valuation" [(ngModel)]="valuation" class="form-control" />
+  </div>
+  <button type="button" class="btn btn-primary" (click)="refresh()" [disabled]="isRefreshing">
+    Refresh
+  </button>
+  <label class="form-label">{{ isRefreshing ? "Loading" : "ready" }}</label>
+
+  <div class="card border-secondary mb-3" style="max-width: 18rem;" *ngFor="let yield of this.yields">
+    <div class="card-header">{{ yield.description }}</div>
+    <div class="card-body">
+      <p class="card-text text-primary">{{ yield.minDescription }}</p>
+      <p class="card-text text-success">{{ yield.midDescription }}</p>
+      <p class="card-text text-danger">{{ yield.maxDescription }}</p>
+    </div>
+  </div>
 </div>
-<div>
-  <label for="farMonth">Far month: </label>
-  <input id="farMonth" [(ngModel)]="farMonth" placeholder="farMonth" />
-</div>
-<div>
-  <label for="nearMonth">Near month: </label>
-  <input id="nearMonth" [(ngModel)]="nearMonth" placeholder="nearMonth" />
-</div>
-<div>
-  <label for="valuation">Valuation: </label>
-  <input id="valuation" [(ngModel)]="valuation" placeholder="valuation" />
-</div>
-<button type="button" (click)="refresh()" [disabled]="isRefreshing">Refresh</button>
-<label>{{ isRefreshing ? "Loading" : "ready" }}</label>
-<ul>
-  <li *ngFor="let yield of this.yields">
-    <label>{{ yield.description }}</label>
-    <br />
-    <label>{{ yield.minDescription }}</label>
-    <br />
-    <label>{{ yield.midDescription }}</label
-    ><br />
-    <label>{{ yield.maxDescription }}</label
-    ><br />
-  </li>
-</ul>
+

@@ -30,4 +30,22 @@ export class OptionYieldsComponent implements OnInit {
         this.isRefreshing = false;
       });
   }
+
+  /**
+   * Returns a list of contracts in next 12 months. The format of each item in the list is yymm.
+   * For example, if this month is 2023-07, return [2307, 2308, 2309, ..., 2406]
+   */
+  get contracts(): string[] {
+    const currentMonth = new Date().getMonth();
+    const currentYear = new Date().getFullYear();
+    const result: string[] = [];
+    for (let i = 0; i < 12; i++) {
+      const month = currentMonth + i;
+      const year = month > 12 ? currentYear + 1 : currentYear;
+      const monthString =
+        month > 12 ? (month % 12).toString() : month.toString();
+      result.push(`${year - 2000}${monthString.padStart(2, '0')}`);
+    }
+    return result;
+  }
 }
