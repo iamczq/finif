@@ -1,0 +1,21 @@
+#!/bin/bash
+
+sudo docker container stop $(sudo docker container ls -aq)
+
+if [[ -f ~/finif/client/Dockerfile ]]; then
+  sudo docker build ~/finif/client
+else
+  echo "No finif/client/Dockerfile exists"
+fi
+
+if [[ -f ~/finif/docker-compose.yml ]]; then
+  sudo docker compose -f ~/finif/docker-compose.yml up -d
+else
+  echo "No finif/docker-compose.tml exists"
+fi
+
+if [[ -f ~/ladder/docker-compose.yml ]]; then
+  sudo docker compose -f ~/ladder/docker-compose.yml up -d
+else
+  echo "No ladder exists"
+fi

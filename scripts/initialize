@@ -1,0 +1,11 @@
+#!/bin/bash
+
+# 1. Sign certificate.
+CERT="server.crt"
+KEY="server.key"
+
+openssl req -newkey rsa:4096 -x509 -sha512 -days 365 -nodes -out $CERT -keyout $KEY
+
+cp $CERT $KEY ../nginx
+rm $CERT $KEY
+
