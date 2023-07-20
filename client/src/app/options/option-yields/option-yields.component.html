@@ -1,40 +1,48 @@
 <div class="container">
-  <div>
-    <label for="underlying" class="form-label">Underlying</label>
+  <div style="max-width: 24rem">
+    <label for="underlying" class="form-label mt-2">Underlying</label>
     <input id="underlying" [(ngModel)]="underlying" class="form-control" />
   </div>
-  <div>
-    <label for="farMonth" class="form-label">Far month</label>
+  <div style="max-width: 24rem">
+    <label for="farMonth" class="form-label mt-2">Far month</label>
     <select id="farMonth" [(ngModel)]="farMonth" class="form-select">
       <option [value]="contract" *ngFor="let contract of this.contracts(24)">
         {{ contract }}
       </option>
     </select>
   </div>
-  <div>
-    <label for="nearMonth" class="form-label">Near month</label>
+  <div style="max-width: 24rem">
+    <label for="nearMonth" class="form-label mt-2">Near month</label>
     <select id="nearMonth" [(ngModel)]="nearMonth" class="form-select">
       <option [value]="contract" *ngFor="let contract of this.contracts(24)">
         {{ contract }}
       </option>
     </select>
   </div>
-  <div>
-    <label for="valuation" class="form-label">Valuation</label>
-    <input id="valuation" [(ngModel)]="valuation" class="form-control" />
+  <div style="max-width: 24rem">
+    <label for="valuation" class="form-label mt-2">Valuation</label>
+    <input id="valuation" [(ngModel)]="valuation" class="form-control vw-75" />
   </div>
-  <button type="button" class="btn btn-primary" (click)="refresh()" [disabled]="isRefreshing">
+  <button
+    type="button"
+    class="btn btn-primary mt-2 mb-2 me-2"
+    (click)="refresh()"
+    [disabled]="isRefreshing"
+  >
     Refresh
   </button>
   <label class="form-label">{{ isRefreshing ? "Loading" : "ready" }}</label>
 
-  <div class="card border-secondary mb-3" style="max-width: 18rem;" *ngFor="let yield of this.yields">
-    <div class="card-header">{{ yield.description }}</div>
-    <div class="card-body">
-      <p class="card-text text-primary">{{ yield.minDescription }}</p>
-      <p class="card-text text-success">{{ yield.midDescription }}</p>
-      <p class="card-text text-danger">{{ yield.maxDescription }}</p>
+  <div class="row">
+    <div class="col" *ngFor="let yield of this.yields">
+      <div class="card border-secondary mb-3" style="width: 18rem">
+        <div class="card-header">{{ yield.description }}</div>
+        <div class="card-body">
+          <p class="card-text text-primary">{{ yield.minDescription }}</p>
+          <p class="card-text text-success">{{ yield.midDescription }}</p>
+          <p class="card-text text-danger">{{ yield.maxDescription }}</p>
+        </div>
+      </div>
     </div>
   </div>
 </div>
-
