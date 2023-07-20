@@ -4,10 +4,9 @@
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
-    "start:dev": "ng serve --watch",
     "build": "ng build",
     "watch": "ng build --watch --configuration development",
-    "prod": "node --max_old_space_size=384 ./node_modules/@angular/cli/bin/ng build --build-optimizer --output-hashing=none",
+    "prod": "node --max_old_space_size=396 ./node_modules/@angular/cli/bin/ng build --build-optimizer --output-hashing=none",
     "test": "ng test"
   },
   "private": true,
