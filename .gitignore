@@ -3,6 +3,12 @@
 # Learn more about .gitignore:
 #     https://www.atlassian.com/git/tutorials/saving-changes/gitignore
 
+# My config
+lib/
+*/data/option
+nginx/server.crt
+nginx/server.key
+
 # Node artifact files
 node_modules/
 dist/
@@ -41,6 +47,7 @@ dist/
 !.vscode/tasks.json
 !.vscode/launch.json
 !.vscode/extensions.json
+.history/*
 
 # Test
 TEST*.xml
@@ -65,6 +72,3 @@ Thumbs.db
 *.flv
 *.mov
 *.wmv
-
-# My config
-lib/
