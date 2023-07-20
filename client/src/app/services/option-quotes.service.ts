@@ -2,12 +2,13 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { OptionYieldDto } from '../dtos/option-yield.dto';
+import { environment } from 'src/environments/environment';
 
 @Injectable({
   providedIn: 'root',
 })
 export class OptionQuotesService {
-  private baseUrl = `https://finif.us.to:8080/api/options`;
+  private baseUrl = `${environment.apiUrl}/options`;
 
   constructor(private http: HttpClient) {}
 
