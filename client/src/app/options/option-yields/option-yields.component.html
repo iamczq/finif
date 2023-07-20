@@ -6,7 +6,7 @@
   <div>
     <label for="farMonth" class="form-label">Far month</label>
     <select id="farMonth" [(ngModel)]="farMonth" class="form-select">
-      <option [value]="contract" *ngFor="let contract of this.contracts">
+      <option [value]="contract" *ngFor="let contract of this.contracts(24)">
         {{ contract }}
       </option>
     </select>
@@ -14,7 +14,7 @@
   <div>
     <label for="nearMonth" class="form-label">Near month</label>
     <select id="nearMonth" [(ngModel)]="nearMonth" class="form-select">
-      <option [value]="contract" *ngFor="let contract of this.contracts">
+      <option [value]="contract" *ngFor="let contract of this.contracts(24)">
         {{ contract }}
       </option>
     </select>
