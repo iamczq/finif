@@ -1,0 +1,82 @@
+<div ngbAccordion>
+  <div ngbAccordionItem [collapsed]="false">
+    <h2 ngbAccordionHeader>
+      <button ngbAccordionButton>Parameters</button>
+    </h2>
+    <div ngbAccordionCollapse>
+      <div ngbAccordionBody>
+        <div style="max-width: 24rem">
+          <label for="type" class="form-label mt-2">Type:</label>
+          <select class="form-select" id="type" [(ngModel)]="type">
+            <option value="P">Put</option>
+            <option value="C">Call</option>
+          </select>
+        </div>
+        <div style="max-width: 24rem">
+          <label for="underlyingPrice" class="form-label mt-2"
+            >Underlying Price
+          </label>
+          <input
+            id="underlyingPrice"
+            type="number"
+            [(ngModel)]="underlyingPrice"
+            class="form-control"
+          />
+        </div>
+        <div style="max-width: 24rem">
+          <label for="executionPrice" class="form-label mt-2"
+            >Execution Price</label
+          >
+          <input
+            id="executionPrice"
+            type="number"
+            [(ngModel)]="executionPrice"
+            class="form-control"
+          />
+        </div>
+        <div style="max-width: 24rem">
+          <label for="remainDays" class="form-label mt-2">Remain Days</label>
+          <input
+            id="remainDays"
+            type="number"
+            [(ngModel)]="remainDays"
+            class="form-control"
+          />
+        </div>
+        <div style="max-width: 24rem">
+          <label for="rate" class="form-label mt-2">Rate</label>
+          <input
+            id="rate"
+            type="number"
+            [(ngModel)]="rate"
+            class="form-control"
+          />
+        </div>
+        <div style="max-width: 24rem">
+          <label for="iv" class="form-label mt-2">Implied Volatility</label>
+          <input
+            id="iv"
+            type="number"
+            [(ngModel)]="iv"
+            step="0.01"
+            class="form-control"
+          />
+        </div>
+        <div>
+          <button
+            class="btn btn-primary mt-2 mb-2 me-2"
+            (click)="this.reCalculate()"
+          >
+            Re-calculate
+          </button>
+          <button class="btn btn-primary mt-2 mb-2 me-2" (click)="this.add()">
+            Add
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<div>
+  <canvas #chart></canvas>
+</div>
