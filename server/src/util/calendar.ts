@@ -63,6 +63,51 @@ export class Calendar {
     return date;
   }
 
+  /**
+   * Given a year and a month, calculate the Nth trading day. A trading day doesn't include Saturday or Sunday.
+   * @param year Contract year
+   * @param month Contract month
+   * @param NumberOfTradingDay The number of the trading day.
+   * @param isReverse If true, start counting from the end of the month.
+   */
+  public static NthTradingDay(
+    year: number,
+    month: number,
+    NumberOfTradingDay: number,
+    isReverse: boolean,
+  ): Date {
+    let date;
+    let count = 0;
+
+    if (isReverse) {
+      // Set date to last day of the month
+      date = new Date(year, month, 0);
+      while (count < NumberOfTradingDay && date.getMonth() === month - 1) {
+        if (date.getDay() !== 6 && date.getDay() !== 0) {
+          // Saturday and Sunday has index 6 and 0 in getDay()
+          count++;
+        }
+        if (count < NumberOfTradingDay) {
+          date.setDate(date.getDate() - 1); // move to previous day
+        }
+      }
+    } else {
+      // set date to first day of the month
+      date = new Date(year, month - 1, 1);
+      while (count < NumberOfTradingDay && date.getMonth() === month - 1) {
+        if (date.getDay() !== 6 && date.getDay() !== 0) {
+          // Saturday and Sunday has index 6 and 0 in getDay()
+          count++;
+        }
+        if (count < NumberOfTradingDay) {
+          date.setDate(date.getDate() + 1); // move to next day
+        }
+      }
+    }
+
+    return date;
+  }
+
   public static getNextQuarterMonth(month: number): number {
     let endMonth;
 
@@ -95,11 +140,32 @@ export class Calendar {
     return endMonth;
   }
 
-  public static getExpirationDays(contract: string): number {
+  // todo: Refactor to remove underlying from Calendar.ts
+  public static getExpirationDays(underlying: string, contract: string): number {
     const year = 2000 + parseInt(contract.substring(0, 2));
     const month = parseInt(contract.substring(2, 4));
 
-    const expireDate = Calendar.thirdFriday(year, month);
+    let expireDate: Date = new Date();
+    if (underlying === 'io' || underlying === 'ho' || underlying === 'mo') {
+      expireDate = Calendar.thirdFriday(year, month);
+    } else if (
+      underlying === '510050' ||
+      underlying === '510300' ||
+      underlying === '510500' ||
+      underlying === '588000' ||
+      underlying === '588080' ||
+      underlying === '159915' ||
+      underlying === '159919' ||
+      underlying === '159922' ||
+      underlying === '159901'
+    ) {
+      expireDate = Calendar.fourthWednesday(year, month);
+    } else if (underlying === 'au') {
+      // Not because of js's month starts from 0, because au option requires the previous month of the contract month.
+      expireDate = Calendar.NthTradingDay(year, month - 1, 5, true);
+    } else {
+      throw new Error(`Don't know how to calculate expiration date of ${underlying}.`);
+    }
     const today = new Date();
     const diffTime = Math.abs(expireDate.getTime() - today.getTime());
     const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));

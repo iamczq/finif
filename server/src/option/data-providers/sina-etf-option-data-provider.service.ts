@@ -66,7 +66,7 @@ export class SinaEtfOptionDataProviderService {
         type: type,
         underlyingPrice: parseFloat(underlyingQuote[0].split(',')[1]),
       };
-      initializer.expireDays = this.getExpirationDays(initializer.month);
+      initializer.expireDays = this.getExpirationDays(underlying, initializer.month);
 
       return new OptionQuoteDto(initializer);
     });
@@ -123,5 +123,8 @@ export class SinaEtfOptionDataProviderService {
     return `${codeCalls[1]},${codePuts[1]}`;
   }
 
-  private getExpirationDays = _.memoize(Calendar.getExpirationDays);
+  private getExpirationDays = _.memoize(
+    Calendar.getExpirationDays,
+    (underlying: string, contractMonth: string) => `${underlying}${contractMonth}`,
+  );
 }

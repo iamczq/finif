@@ -121,7 +121,7 @@ export class FinancialOption implements IOption {
     } else if (this.code.toUpperCase().indexOf('P') > 0) {
       callPut = 'P';
     } else {
-      console.log(`Wrong code: ${this.code}`);
+      throw new Error(`Wrong code: ${this.code}`);
     }
 
     if (callPut === 'C') {

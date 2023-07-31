@@ -96,7 +96,7 @@ export class SinaIndexOptionDataProviderService {
         underlyingPrice: underlyingPrice,
       };
 
-      initializer.expireDays = this.getExpirationDays(initializer.month);
+      initializer.expireDays = this.getExpirationDays(underlying, initializer.month);
 
       return new OptionQuoteDto(initializer);
     });
@@ -120,7 +120,7 @@ export class SinaIndexOptionDataProviderService {
         type: 'P',
         underlyingPrice: underlyingPrice,
       };
-      initializer.expireDays = this.getExpirationDays(initializer.month);
+      initializer.expireDays = this.getExpirationDays(underlying, initializer.month);
 
       return new OptionQuoteDto(initializer);
     });
@@ -128,5 +128,8 @@ export class SinaIndexOptionDataProviderService {
     return mappedQuotes.concat(mappedPuts);
   }
 
-  private getExpirationDays = _.memoize(Calendar.getExpirationDays);
+  private getExpirationDays = _.memoize(
+    Calendar.getExpirationDays,
+    (underlying: string, contractMonth: string) => `${underlying}${contractMonth}`,
+  );
 }
